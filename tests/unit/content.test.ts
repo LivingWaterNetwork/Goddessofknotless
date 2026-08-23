@@ -14,6 +14,9 @@ import { faqs } from "@/content/faqs";
 import { policies, publishablePolicies, pendingPolicies } from "@/content/policies";
 import { gallery, galleryFilters, publishableGallery } from "@/content/gallery";
 import { stockPlaceholders } from "@/content/placeholder-images";
+import { plannedOfferings } from "@/content/roadmap";
+import { locations, openLocations } from "@/content/locations";
+import { team, publishableTeam, reservedSeats } from "@/content/team";
 import { testimonials, publishableTestimonials } from "@/content/testimonials";
 import { routeSeo, seoFor } from "@/content/seo";
 import { features } from "@/content/features";
@@ -296,5 +299,78 @@ describe("formatting helpers", () => {
     expect(durationRange(1.5, 2)).toBe("1½–2 hours");
     expect(durationRange(6, 8)).toBe("6–8 hours");
     expect(durationRange(3, 3)).toBe("3 hours");
+  });
+});
+
+describe("roadmap surfaces", () => {
+  it("keeps every planned offering unavailable and unconfirmed", () => {
+    expect(plannedOfferings.length).toBeGreaterThan(0);
+    for (const offering of plannedOfferings) {
+      expect(offering.available).toBe(false);
+      expect(offering.status).not.toBe("verified");
+    }
+  });
+
+  /* A "coming soon" page ranking against the pages that actually sell
+     something is a net loss, so a planned route stays out of the index. */
+  it("keeps planned routes out of the index and the sitemap", () => {
+    for (const offering of plannedOfferings) {
+      const seo = routeSeo.find((r) => r.path === offering.path);
+      expect(seo, `no SEO entry for ${offering.path}`).toBeDefined();
+      expect(seo?.indexed).toBe(false);
+    }
+  });
+
+  it("never puts a price, a date, or a booking promise on a plan", () => {
+    for (const offering of plannedOfferings) {
+      const prose = [offering.lede, offering.standing, ...offering.intent].join(" ");
+      expect(prose).not.toMatch(/\$\d/);
+      expect(prose).not.toMatch(/\b20\d{2}\b/);
+      expect(prose).not.toMatch(/\b(book now|buy now|sign up|join the waitlist|launching)\b/i);
+    }
+  });
+});
+
+describe("locations", () => {
+  it("publishes exactly the studios that exist", () => {
+    expect(openLocations.length).toBe(1);
+    for (const location of locations) {
+      expect(location.city.trim()).not.toBe("");
+      expect(location.status).not.toBe("placeholder");
+    }
+  });
+
+  it("never invents an address", () => {
+    for (const location of locations) {
+      if (location.streetAddress !== null) {
+        expect(location.status).toBe("verified");
+      }
+    }
+  });
+});
+
+describe("team", () => {
+  it("publishes only real, named people", () => {
+    expect(publishableTeam.length).toBe(1);
+    for (const member of publishableTeam) {
+      expect(member.name).toBeTruthy();
+      expect(member.status).toBe("verified");
+    }
+  });
+
+  /* The rule the whole page rests on: an unfilled seat carries no name, no
+     biography and no portrait, so a colleague who does not exist cannot ship. */
+  it("keeps every reserved seat anonymous", () => {
+    expect(reservedSeats.length).toBeGreaterThan(0);
+    for (const seat of reservedSeats) {
+      expect(seat.name).toBeNull();
+      expect(seat.bio).toBeNull();
+      expect(seat.portraitSrc).toBeNull();
+      expect(seat.status).not.toBe("verified");
+    }
+  });
+
+  it("accounts for every member as either published or reserved", () => {
+    expect(publishableTeam.length + reservedSeats.length).toBe(team.length);
   });
 });

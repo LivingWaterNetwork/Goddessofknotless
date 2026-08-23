@@ -6,6 +6,8 @@ import { siteUrl } from "@/content/business";
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
+  /* `indexed: false` keeps the roadmap routes out. A "not available yet" page
+     in the sitemap is an invitation to rank a page with nothing behind it. */
   const staticRoutes = routeSeo
     .filter((route) => route.indexed)
     .map((route) => ({

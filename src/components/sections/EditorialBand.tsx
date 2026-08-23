@@ -21,7 +21,6 @@ export function EditorialBand() {
           alt=""
           fill
           sizes="100vw"
-          quality={76}
           className="band-photo-img"
         />
         <span className="band-wash" aria-hidden="true" />

@@ -69,6 +69,23 @@ docs/                     # Client handoff documentation
 docs/qa/                  # 32 QA screenshots, 4 breakpoints
 ```
 
+### Routes that describe the future, not the present
+
+`/classes`, `/shop` and `/events` are **roadmap surfaces**: built so the structure exists before
+the content does, but deliberately not offerings. Each one leads with what is *not* true yet,
+carries no price, no date and nothing bookable, sits `indexed: false` so it stays out of the
+sitemap and the search index, and lives in the footer rather than the primary nav. `/locations`
+and `/team` describe things that exist today — one studio, one braider — and are indexed
+normally. See `src/content/roadmap.ts`, `locations.ts` and `team.ts`.
+
+Two rules the launch gate enforces here:
+
+- **A reserved seat is never a person.** A team member that is not `verified` must have a null
+  name, a null biography and a null portrait, so a plausible-looking colleague who does not exist
+  cannot ship.
+- **A location is never invented.** No placeholder city, no undated "opening soon" pin. An
+  unverified address is the fastest route to a Google Business Profile suspension.
+
 ### The content layer is the important part
 
 Every public fact lives in `src/content/` as typed data, never as a string in a component. A price
@@ -128,6 +145,9 @@ No secrets are needed by the site. Nothing sensitive is committed.
 | Testimonials | `src/content/testimonials.ts` |
 | Titles and meta descriptions | `src/content/seo.ts` |
 | Optional routes and sections | `src/content/features.ts` |
+| Classes, shop, events — the roadmap | `src/content/roadmap.ts` |
+| Studios | `src/content/locations.ts` |
+| Braiders | `src/content/team.ts` |
 
 Adding a size means adding one record to `services.ts`. Its detail page, its sitemap entry, its
 gallery filter, its structured data, and its slot in the size guide all follow automatically.
@@ -193,8 +213,8 @@ re-ignore them.**
 
 | | |
 |---|---|
-| Unit | 39 tests: service integrity, price/duration monotonicity, feature flags, content-gate invariants, formatting, SEO uniqueness |
-| End-to-end | 114 tests across mobile and desktop: routes, navigation, mobile menu focus management, booking CTA presence, size guide, gallery filtering, FAQ accordion, metadata, sitemap, structured data |
+| Unit | 47 tests: service integrity, price/duration monotonicity, feature flags, content-gate invariants, formatting, SEO uniqueness |
+| End-to-end | 138 tests across mobile and desktop: routes, navigation, mobile menu focus management, booking CTA presence, size guide, gallery filtering, FAQ accordion, metadata, sitemap, structured data |
 | Accessibility | axe-core WCAG 2.2 AA on all ten routes plus open menu and accordion states — **zero violations**. Plus asserted manual checks: 320 px, 200% zoom, target sizes, reduced motion, heading order, sticky-header clearance |
 | Measured vitals | LCP 180 ms, CLS 0.000 |
 

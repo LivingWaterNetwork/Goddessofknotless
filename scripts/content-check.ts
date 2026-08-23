@@ -19,6 +19,10 @@ import { gallery } from "../src/content/gallery";
 import { stockPlaceholders } from "../src/content/placeholder-images";
 import { testimonials } from "../src/content/testimonials";
 import { business } from "../src/content/business";
+import { plannedOfferings } from "../src/content/roadmap";
+import { locations } from "../src/content/locations";
+import { team } from "../src/content/team";
+import { routeSeo } from "../src/content/seo";
 
 const PRODUCTION =
   process.env.CONTENT_MODE === "production" ||
@@ -148,6 +152,82 @@ if (PRODUCTION && process.env.NEXT_PUBLIC_ALLOW_INDEXING !== "true") {
     "Indexing",
     'NEXT_PUBLIC_ALLOW_INDEXING is not "true", so robots.txt disallows everything and every page carries noindex. Correct for a review deployment; set it on the real production domain or the launched site will be invisible to Google.',
   );
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4c. Roadmap surfaces — plans must never read as offerings                   */
+/* -------------------------------------------------------------------------- */
+for (const offering of plannedOfferings) {
+  if (offering.available) {
+    if (offering.status !== "verified") {
+      blocker(
+        "Roadmap",
+        `"${offering.navLabel}" is marked available but is still ${offering.status}. An offering cannot go live on unconfirmed content.`,
+      );
+    }
+  } else {
+    confirm(
+      "Roadmap",
+      `"${offering.navLabel}" (${offering.path}) is published as a PLAN, not a service. ${offering.sourceNote}`,
+    );
+
+    /* A planned route must not be in the index or the sitemap. */
+    const seo = routeSeo.find((r) => r.path === offering.path);
+    if (!seo) {
+      blocker("Roadmap", `"${offering.path}" has no SEO entry. Every route needs one.`);
+    } else if (seo.indexed) {
+      blocker(
+        "Roadmap",
+        `"${offering.path}" is marked indexed while the offering is still a plan. A thin "coming soon" page must not compete in search with the pages that sell something.`,
+      );
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4d. Locations — never invent one                                            */
+/* -------------------------------------------------------------------------- */
+for (const location of locations) {
+  if (location.stage === "planned") {
+    /* A named, dated future studio is a claim. Until there is a lease, an
+       expansion is an intention with no city attached. */
+    confirm(
+      "Locations",
+      `"${location.name}" is listed as a planned location. Confirm the lease and the address before it publishes — an unverified location risks a Google Business Profile suspension.`,
+    );
+  }
+  if (location.status === "placeholder") {
+    blocker("Locations", `"${location.name}" is placeholder content and must not publish.`);
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4e. Team — a reserved seat is never a person                                */
+/* -------------------------------------------------------------------------- */
+for (const member of team) {
+  if (member.status === "verified") {
+    if (!member.name) {
+      blocker("Team", `Team member "${member.id}" is verified but has no name.`);
+    }
+    continue;
+  }
+
+  /* The rule that matters: an unconfirmed seat may not carry a name, a bio or
+     a portrait. Otherwise a "Meet the team" page ships a colleague who does
+     not exist, on a site whose whole claim is who touches your hair. */
+  if (member.name !== null) {
+    blocker(
+      "Team",
+      `Team member "${member.id}" is ${member.status} but carries the name "${member.name}". A seat that is not filled must have a null name.`,
+    );
+  }
+  if (member.bio !== null) {
+    blocker("Team", `Unfilled seat "${member.id}" carries a biography. It must be null.`);
+  }
+  if (member.portraitSrc !== null) {
+    blocker("Team", `Unfilled seat "${member.id}" carries a portrait. It must be null.`);
+  }
+  confirm("Team", `Seat "${member.id}" is reserved, not filled. ${member.sourceNote}`);
 }
 
 /* -------------------------------------------------------------------------- */

@@ -76,6 +76,56 @@ export const routeSeo: RouteSeo[] = [
     indexed: true,
     priority: 0.4,
   },
+  /* ---------------------------------------------------------------------
+     Roadmap and structure routes.
+
+     `/locations` and `/team` describe things that exist today (one studio, one
+     braider) and are indexed. The three roadmap routes are `indexed: false`:
+     a thin "not available yet" page ranking against the pages that actually
+     sell something is a net loss, and Google treats a page with no offering
+     behind it as exactly what it is. They flip to indexed when the offering
+     becomes real.
+     --------------------------------------------------------------------- */
+  {
+    path: "/locations",
+    title: "Locations",
+    description:
+      "Goddess of Knotless operates from a private, by-appointment studio in Chicago's West Loop. Where the work happens today, and how the studio is built to repeat.",
+    indexed: true,
+    priority: 0.6,
+  },
+  {
+    path: "/team",
+    title: "The Studio Team",
+    description:
+      "Every appointment at Goddess of Knotless is currently braided by Esther Parkman herself. The standard any future braider has to meet before joining her.",
+    indexed: true,
+    priority: 0.5,
+  },
+  {
+    path: "/classes",
+    title: "Classes",
+    description:
+      "Knotless braiding instruction is planned but not yet running at Goddess of Knotless. What it is intended to cover, and what has still to be decided.",
+    indexed: false,
+    priority: 0.1,
+  },
+  {
+    path: "/shop",
+    title: "Shop",
+    description:
+      "A short line of care products for braided hair is planned but not yet for sale at Goddess of Knotless. What it is intended to be.",
+    indexed: false,
+    priority: 0.1,
+  },
+  {
+    path: "/events",
+    title: "Events",
+    description:
+      "Studio days, guest appearances and gatherings are planned but not yet scheduled at Goddess of Knotless. What they are intended to be.",
+    indexed: false,
+    priority: 0.1,
+  },
   {
     path: "/privacy",
     title: "Privacy",

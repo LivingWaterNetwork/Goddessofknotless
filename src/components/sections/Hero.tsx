@@ -31,8 +31,12 @@ export function Hero() {
           alt=""
           fill
           priority
+          /* Next emits the preload link from `priority`, but it does not add a
+             priority hint unless one is asked for — and without it the browser
+             discovers the LCP image at normal priority behind the CSS and the
+             fonts. This is the site's only image that gets it. */
+          fetchPriority="high"
           sizes="100vw"
-          quality={78}
           className="hero-photo-img"
         />
         <span className="hero-photo-wash" aria-hidden="true" />
@@ -45,7 +49,7 @@ export function Hero() {
 
       <div className="container-page hero-inner">
         <div className="hero-copy">
-          <ScriptMark className="hero-script" priority sizes="(min-width: 64rem) 24rem, 62vw" />
+          <ScriptMark className="hero-script" priority sizes="(min-width: 64rem) 21rem, 46vw" />
 
           <p className="overline hero-overline">
             {business.neighborhood.value} · {business.city.value} · By Appointment

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ScriptMark } from "@/components/ui/BrandMark";
 import { business, originStatement } from "@/content/business";
-import { footerNav } from "@/content/navigation";
+import { footerNav, roadmapNav } from "@/content/navigation";
 import { PreviewBadge } from "@/components/ui/PreviewBadge";
 
 export function Footer() {
@@ -33,6 +33,22 @@ export function Footer() {
               ))}
             </ul>
           </nav>
+
+          {roadmapNav.length > 0 ? (
+            <nav className="site-footer-nav" aria-label="Planned">
+              <h2 className="t-label site-footer-heading">On the way</h2>
+              <ul>
+                {roadmapNav.map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="site-footer-link">
+                      {item.label}
+                      <span className="site-footer-soon">Soon</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
 
           <div className="site-footer-contact">
             <h2 className="t-label site-footer-heading">Studio</h2>

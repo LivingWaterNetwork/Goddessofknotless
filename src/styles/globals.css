@@ -2875,3 +2875,293 @@
     backdrop-filter: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Roadmap surfaces: classes, shop, events, locations, team.
+   Everything here has to read as "planned", never as "available".
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* The standing statement. Clay, not gold — a planned offering must not wear
+     the same colour as the things that can actually be booked. */
+  .planned-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.625rem 1rem;
+    max-width: 68ch;
+    padding: 1.125rem 1.375rem;
+    background: var(--color-flag-tint);
+    border: 1px dashed var(--color-flag);
+    border-radius: var(--radius-sm);
+    color: var(--color-flag-text);
+    font-size: var(--text-body-sm);
+    line-height: 1.65;
+  }
+
+  .planned-notice-tag {
+    flex: none;
+    font-family: var(--font-sans);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-flag);
+  }
+  .planned-notice-body { flex: 1 1 22rem; }
+
+  .on-dark .planned-notice {
+    background: rgb(255 255 255 / 0.06);
+    border-color: var(--color-gold-soft);
+    color: var(--color-text-on-dark);
+  }
+  .on-dark .planned-notice-tag { color: var(--color-gold-text-on-dark); }
+
+  .planned-interest {
+    margin-top: clamp(2rem, 3.5vw, 3rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+    max-width: 56ch;
+    color: var(--color-text-muted);
+  }
+
+  /* --- Offering pages (classes / shop / events) --- */
+  .offering-inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2.5rem, 4vw, 4rem);
+    align-items: start;
+  }
+
+  .offering-main .planned-notice { margin-bottom: clamp(2.5rem, 4vw, 3.5rem); }
+
+  .offering-list {
+    list-style: none;
+    margin: clamp(1.75rem, 3vw, 2.5rem) 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+  }
+  .offering-list li {
+    position: relative;
+    padding: 1.125rem 0 1.125rem 2.25rem;
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-body);
+    color: var(--color-text-muted);
+    max-width: 62ch;
+  }
+  .offering-list li:last-child { border-bottom: 1px solid var(--color-border); }
+  .offering-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.75rem;
+    width: 1.25rem;
+    height: 2px;
+    background-image: var(--gradient-foil);
+  }
+
+  .offering-card {
+    padding: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+  }
+  .offering-card-seal { margin-bottom: 1.25rem; }
+  .offering-card-title { margin-bottom: 0.5rem; }
+  .offering-card-note { margin-bottom: 1.25rem; }
+
+  .offering-prereqs { list-style: none; margin: 0 0 1.25rem; padding: 0; }
+  .offering-prereqs li {
+    padding: 0.6875rem 0;
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-body-sm);
+    color: var(--color-text-muted);
+  }
+
+  @media (min-width: 64rem) {
+    .offering-inner { grid-template-columns: 1.25fr 0.75fr; }
+    .offering-aside { position: sticky; top: 6rem; }
+  }
+
+  /* --- Locations --- */
+  .location-list { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(3rem, 5vw, 4.5rem); }
+
+  .location {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(2rem, 3.5vw, 3.5rem);
+    align-items: center;
+  }
+
+  .location-stage { margin-bottom: 1rem; }
+  .location-name { margin-bottom: 0.5rem; }
+  .location-place { color: var(--color-text-muted); }
+  .location-address { margin-top: 1.25rem; max-width: 46ch; }
+  .location-badge { margin-left: 0.5rem; }
+  .location-summary { margin-top: 1.5rem; }
+
+  @media (min-width: 64rem) {
+    .location { grid-template-columns: 0.95fr 1.05fr; }
+  }
+
+  .expansion-section { position: relative; overflow: hidden; }
+  .expansion-inner { display: flex; flex-direction: column; align-items: center; }
+  .expansion-rule { margin-top: clamp(1.75rem, 3vw, 2.5rem); }
+  .expansion-notice { margin-top: clamp(2rem, 3.5vw, 3rem); }
+  .expansion-badge { margin-left: 0.5rem; }
+
+  /* --- Team --- */
+  .team-section { position: relative; overflow: hidden; }
+  .team-section .container-page { position: relative; }
+
+  .team-frond {
+    position: absolute;
+    color: var(--color-gold);
+    opacity: 0.08;
+    pointer-events: none;
+    top: -5rem;
+    right: -7rem;
+    width: clamp(14rem, 30vw, 26rem);
+    transform: rotate(168deg);
+  }
+  .team-frond svg { width: 100%; height: auto; }
+
+  .team-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1.25rem, 2vw, 2rem);
+  }
+  @media (min-width: 34rem) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .team-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  .team-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .team-card-image { border-radius: 0; box-shadow: none; }
+  .team-card-body { display: flex; flex-direction: column; flex: 1; padding: clamp(1.25rem, 1rem + 1vw, 1.75rem); }
+  .team-card-name { margin-bottom: 0.375rem; }
+  .team-card-role { color: var(--color-text-muted); margin-bottom: 1rem; }
+  .team-card-bio { margin-bottom: 1.25rem; }
+
+  .team-card-focus { list-style: none; margin: 0 0 1.25rem; padding: 0; margin-top: auto; }
+  .team-card-focus li {
+    position: relative;
+    padding: 0.5rem 0 0.5rem 1.25rem;
+    border-top: 1px solid var(--color-border);
+    font-size: var(--text-body-sm);
+    color: var(--color-text-muted);
+  }
+  .team-card-focus li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 1.0625rem;
+    width: 0.5rem;
+    height: 1px;
+    background: var(--color-gold);
+  }
+
+  /* A reserved seat is drawn, never photographed. Dashed edge and a visible
+     "seat reserved" label, so it cannot be mistaken for a person. */
+  .team-card-seat { border-style: dashed; border-color: var(--color-border-strong); background: var(--color-surface-sunken); }
+
+  .team-seat-frame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+    aspect-ratio: 1200 / 1440;
+    background: var(--color-ivory-warm);
+    border-bottom: 1px dashed var(--color-border-strong);
+    color: var(--color-gold-text);
+  }
+  .team-seat-frond { width: clamp(2.5rem, 6vw, 4rem); opacity: 0.55; }
+  .team-seat-label {
+    font-family: var(--font-sans);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .team-standard-section { position: relative; overflow: hidden; }
+  .team-standard-inner { display: flex; flex-direction: column; align-items: center; }
+  .team-standard-rule { margin-top: clamp(1.75rem, 3vw, 2.5rem); }
+  .team-standard-badge { margin-top: 1.5rem; }
+
+  /* --- What's next block on /about --- */
+  .next-head { margin-bottom: clamp(2rem, 3.5vw, 3rem); }
+
+  .next-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(1rem, 1.6vw, 1.5rem);
+  }
+  @media (min-width: 34rem) { .next-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 64rem) { .next-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .next-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    background: var(--color-surface);
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-md);
+  }
+  .next-card-overline { margin-bottom: 0.75rem; }
+  .next-card-title { margin-bottom: 0.75rem; }
+  .next-card-link { color: inherit; text-decoration: none; border-bottom: 1px solid var(--color-gold); }
+  .next-card-status { margin-bottom: 1rem; }
+
+  .next-card-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-family: var(--font-sans);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-flag-text);
+    background: var(--color-flag-tint);
+    border: 1px solid var(--color-flag);
+    border-radius: var(--radius-pill);
+    padding: 0.3125rem 0.625rem;
+  }
+
+  .next-card-body { margin-bottom: 1.25rem; }
+  .next-card-more { margin-top: auto; padding-top: 0.75rem; }
+
+  /* --- Footer "on the way" column --- */
+  .site-footer-soon {
+    margin-left: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gold-text-on-dark);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-pill);
+    padding: 0.125rem 0.375rem;
+  }
+
+  @media (min-width: 48rem) {
+    .site-footer-top { grid-template-columns: 1.8fr 1fr 1fr 1fr; }
+  }
+}

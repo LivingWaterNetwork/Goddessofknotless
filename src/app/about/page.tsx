@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { ImageFrame } from "@/components/ui/ImageFrame";
 import { ClosingCta } from "@/components/sections/ClosingCta";
+import { WhatsNext } from "@/components/sections/WhatsNext";
 import { business } from "@/content/business";
 import { founderImageAbout } from "@/content/placeholder-images";
 import { metadataForRoute } from "@/lib/page-metadata";
@@ -103,6 +104,8 @@ export default function AboutPage() {
           <div className="rule-foil rule-foil-center standard-rule" />
         </div>
       </Section>
+
+      <WhatsNext />
 
       <ClosingCta />
     </>

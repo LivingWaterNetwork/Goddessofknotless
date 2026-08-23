@@ -42,7 +42,10 @@ export function ScriptMark({
 
 export function Seal({
   className = "",
-  sizes = "7rem",
+  /* The seal is never displayed larger than ~7rem, and inside `.seal-plate` it
+     is 68% of that. Declaring a generous `sizes` made every viewport download
+     the 640w candidate for a 60px mark. */
+  sizes = "(min-width: 64rem) 7rem, 5rem",
 }: {
   className?: string;
   sizes?: string;

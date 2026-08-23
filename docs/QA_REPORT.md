@@ -386,3 +386,84 @@ scroll ease rather than jump — the reveal observers never saw the sections pas
 captured blank. The capture script now disables smooth scrolling, forces lazy images eager before
 scrolling, and hides the fixed mobile booking bar, which otherwise smears across a stitched
 full-page capture. All three are capture artefacts, not site behaviour.
+
+---
+---
+
+# Full audit — every grading, desktop and mobile
+
+Run 23 August 2026 against a production build (`pnpm build` + `pnpm start`), Lighthouse 13 on
+Chromium, **13 routes × 2 form factors = 26 audits**. Raw JSON per route is not committed; the
+tables below are the complete result.
+
+## Desktop — 1440×900, no CPU throttle
+
+| Route | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+|---|---|---|---|---|---|---|---|
+| `/` | **100** | **100** | **100** | 69 | 0.8 s | 0 | 0 ms |
+| `/services` | **100** | **100** | **100** | 69 | 0.7 s | 0 | 0 ms |
+| `/services/medium-large` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/experience` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/gallery` | **100** | **100** | **100** | 69 | 0.7 s | 0 | 0 ms |
+| `/about` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 10 ms |
+| `/faq` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/policies` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/locations` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/team` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/classes` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/shop` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+| `/events` | **100** | **100** | **100** | 69 | 0.6 s | 0 | 0 ms |
+
+## Mobile — Moto G Power emulation, 4× CPU slowdown, throttled network
+
+| Route | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+|---|---|---|---|---|---|---|---|
+| `/` | 90 | **100** | **100** | 69 | 3.5 s | 0 | 90 ms |
+| `/services` | 93 | **100** | **100** | 69 | 3.1 s | 0 | 70 ms |
+| `/services/medium-large` | 94 | **100** | **100** | 69 | 2.9 s | 0 | 120 ms |
+| `/experience` | 94 | **100** | **100** | 69 | 2.9 s | 0 | 130 ms |
+| `/gallery` | 94 | **100** | **100** | 69 | 3.0 s | 0 | 70 ms |
+| `/about` | 94 | **100** | **100** | 69 | 3.0 s | 0 | 70 ms |
+| `/faq` | 94 | **100** | **100** | 69 | 3.1 s | 0 | 60 ms |
+| `/policies` | 95 | **100** | **100** | 69 | 2.9 s | 0 | 70 ms |
+| `/locations` | 94 | **100** | **100** | 69 | 3.0 s | 0 | 70 ms |
+| `/team` | 95 | **100** | **100** | 69 | 2.9 s | 0 | 60 ms |
+| `/classes` | 95 | **100** | **100** | 69 | 2.9 s | 0 | 60 ms |
+| `/shop` | 94 | **100** | **100** | 69 | 2.9 s | 0 | 90 ms |
+| `/events` | 95 | **100** | **100** | 69 | 2.9 s | 0 | 70 ms |
+
+## The SEO 69 is one audit, and it is deliberate
+
+Across all 26 runs the **only** failing SEO audit is `is-crawlable`. Titles, meta descriptions,
+canonical tags, link text, crawlable anchors, structured data, `robots.txt` validity and HTTP
+status all pass on every route.
+
+`is-crawlable` fails because the review deployment is `noindex` on purpose — a crawlable draft
+would index placeholder photography and unconfirmed prices, then compete with the real site at
+launch. **Setting `NEXT_PUBLIC_ALLOW_INDEXING=true` on the production domain turns this category
+to 100.** It should not be set anywhere else.
+
+## Fixed by what the audit found
+
+| Finding | Detail | Fix |
+|---|---|---|
+| `lcp-discovery-insight` failing on `/` | Next emits a preload link from `priority`, but does not add a priority hint unless one is asked for. The largest image on the site was being fetched at normal priority, behind the CSS and the fonts | Explicit `fetchPriority="high"` on the hero image — the only image on the site that gets it |
+| `image-delivery-insight`, 29 KiB wasted on `/` | The script logo declared `sizes="62vw"` while the stylesheet renders it at `46vw`, so every phone downloaded the 640 px file for a 332 px slot. The seal declared a flat `7rem` and did the same for a 60 px mark | Corrected both `sizes` to match what the CSS actually does. Residual saving is now 10 KiB, and that is the hero photograph itself |
+| `quality` props silently ignored | `quality={78}` and `quality={76}` were being dropped back to 75 — Next 15+ requires non-default qualities to be allowlisted in `images.qualities`. The code implied a control it did not have | Removed; the images are served at the default 75 |
+| Mobile TBT on `/` | 250 ms | 90 ms, from the image-priority work |
+
+## Not fixed, and why
+
+| Finding | Assessment |
+|---|---|
+| `bf-cache` | Reported as "disabled by the command line" — an artefact of how Lighthouse launches Chromium, marked "Not actionable" by Lighthouse itself |
+| `unused-javascript`, ~29 KiB | Next's own framework chunks. Not reachable without ejecting from the framework |
+| `render-blocking-insight` | The single 15 KB stylesheet. Lighthouse's own estimated saving is **0 ms** |
+| `legacy-javascript-insight`, `forced-reflow-insight`, `network-dependency-tree-insight` | All inside Next's runtime |
+| Mobile LCP 2.9–3.5 s (simulated) | Simulated, not measured. Measured LCP on the same build is **284–332 ms** — see the measured-vitals section above. The gap is Lighthouse's mobile throttling model, not the site |
+
+## Accessibility and best practices
+
+**100 on every route, on both form factors, with zero failing audits in either category** — in
+addition to the axe-core WCAG 2.2 AA pass (0 violations across 13 routes plus the open-menu and
+open-accordion states) that the e2e suite enforces on every run.

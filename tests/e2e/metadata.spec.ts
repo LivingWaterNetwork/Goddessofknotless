@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("metadata", () => {
-  const routes = ["/", "/services", "/experience", "/gallery", "/about", "/faq"];
+  const routes = ["/", "/services", "/experience", "/gallery", "/about", "/faq", "/locations", "/team", "/classes", "/shop", "/events"];
 
   test("every route has a unique, non-empty title and description", async ({ page }) => {
     const seen = new Map<string, string>();
@@ -27,11 +27,43 @@ test.describe("metadata", () => {
     expect(response.status()).toBe(200);
     const xml = await response.text();
 
-    for (const path of ["/services", "/experience", "/gallery", "/about", "/faq", "/policies"]) {
+    for (const path of [
+      "/services",
+      "/experience",
+      "/gallery",
+      "/about",
+      "/faq",
+      "/policies",
+      "/locations",
+      "/team",
+    ]) {
       expect(xml).toContain(path);
     }
     for (const slug of ["jumbo", "large", "medium-large", "microbraids"]) {
       expect(xml).toContain(`/services/${slug}`);
+    }
+  });
+
+  /* A "not available yet" page ranking against the pages that actually sell
+     something is a net loss, so the roadmap routes stay out of the sitemap and
+     out of the index until the offering behind them is real. */
+  test("sitemap excludes routes whose offering does not exist yet", async ({ request }) => {
+    const xml = await (await request.get("/sitemap.xml")).text();
+    for (const path of ["/classes", "/shop", "/events"]) {
+      expect(xml).not.toContain(path);
+    }
+  });
+
+  test("roadmap routes are reachable but never indexable", async ({ page }) => {
+    for (const path of ["/classes", "/shop", "/events"]) {
+      await page.goto(path);
+      await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+        "content",
+        /noindex/,
+      );
+      /* And they say so on the page, not only in a meta tag. */
+      await expect(page.locator(".planned-notice").first()).toContainText(/not/i);
     }
   });
 
