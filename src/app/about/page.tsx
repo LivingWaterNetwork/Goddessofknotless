@@ -93,9 +93,9 @@ export default function AboutPage() {
             overline="The Standard"
             title={
               <>
-                Become the first name she gives
+                The first name a client gives
                 <br />
-                when someone asks who she trusts with her hair.
+                when a friend asks who to trust with her hair.
               </>
             }
             lede="That is the whole ambition. Not the biggest studio, not the loudest one — the one that gets recommended by name."

@@ -9,6 +9,12 @@ import { Reveal } from "@/components/ui/Reveal";
  * oversized foil numeral, a gold rule, and copy that steps down the page —
  * carrying the brand's positioning line ("for women whose hair, time and
  * privacy matter") as structure rather than as a slogan.
+ *
+ * VOICE: everything in this section speaks to the visitor. The heading and
+ * lede used to be written to Esther instead ("three things she trusts you
+ * with… the reason clients refer you"), which cast the reader as the braider
+ * and ran the trust backwards, while the three pillars below addressed the
+ * reader directly. Second person here always means the person reading.
  */
 const pillars = [
   {
@@ -46,12 +52,12 @@ export function HairTimePrivacy() {
           overline="The Standard"
           title={
             <>
-              Three things she trusts you with,
+              Three things you are
               <br />
-              and the reason clients refer you.
+              trusting Esther with.
             </>
           }
-          lede="She is not only asking who can braid her hair. She is asking who she can trust with her hair, her time, and her privacy."
+          lede="The question is never only who can braid your hair. It is who you trust with your hair, your time, and your privacy — and it is why clients pass her name on."
           className="pillars-head"
         />
 
