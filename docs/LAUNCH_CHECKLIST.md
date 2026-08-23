@@ -69,6 +69,10 @@ between that and a public launch.
 - [ ] Set `NEXT_PUBLIC_BOOKING_URL` to the real booking URL.
 - [ ] Set `NEXT_PUBLIC_REBOOK_URL` if the platform supports rebooking links.
 - [ ] Set `NEXT_PUBLIC_CONTENT_MODE=production`. This hides all internal verification badges.
+- [ ] **Set `NEXT_PUBLIC_ALLOW_INDEXING=true`.** Until this is set, `robots.txt` disallows
+      everything and every page carries `noindex` — correct for a review link, fatal for a launched
+      site. `CONTENT_MODE=production pnpm content:check` fails if it is missing, so this cannot be
+      forgotten.
 - [ ] Run `CONTENT_MODE=production pnpm content:check` — **it must exit 0.**
 - [ ] Run `pnpm qa` and confirm everything passes.
 - [ ] Click every booking button on the deployed site and confirm each reaches the booking

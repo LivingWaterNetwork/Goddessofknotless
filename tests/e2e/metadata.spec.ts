@@ -35,10 +35,22 @@ test.describe("metadata", () => {
     }
   });
 
-  test("robots.txt points at the sitemap", async ({ request }) => {
+  test("robots.txt blocks crawlers on a review deployment", async ({ request }) => {
     const response = await request.get("/robots.txt");
     expect(response.status()).toBe(200);
-    expect(await response.text()).toContain("sitemap.xml");
+    const body = await response.text();
+
+    /* Locally and on any preview/review deployment, NEXT_PUBLIC_SITE_URL is not
+       the canonical domain, so everything must be disallowed. A review link that
+       Google can crawl would index placeholder content. */
+    expect(body).toContain("Disallow: /");
+    expect(body).not.toContain("Allow: /");
+  });
+
+  test("pages carry noindex on a review deployment", async ({ page }) => {
+    await page.goto("/");
+    const robots = await page.locator('meta[name="robots"]').getAttribute("content");
+    expect(robots).toContain("noindex");
   });
 
   test("open graph image renders", async ({ request }) => {

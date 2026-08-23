@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { seoFor } from "@/content/seo";
+import { indexingAllowed } from "./indexing";
 
 /**
  * Builds per-route metadata from the single SEO table, so a route can never
@@ -22,6 +23,10 @@ export function metadataForRoute(path: string): Metadata {
       description: seo.description,
       url: seo.path,
     },
-    robots: seo.indexed ? { index: true, follow: true } : { index: false, follow: false },
+    /* A review deployment is never indexable, whatever the route says. */
+    robots:
+      seo.indexed && indexingAllowed
+        ? { index: true, follow: true }
+        : { index: false, follow: false },
   };
 }

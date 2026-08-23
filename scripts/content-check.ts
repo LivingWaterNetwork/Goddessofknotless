@@ -121,6 +121,16 @@ for (const item of gallery) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* 4b. Search indexing                                                         */
+/* -------------------------------------------------------------------------- */
+if (PRODUCTION && process.env.NEXT_PUBLIC_ALLOW_INDEXING !== "true") {
+  blocker(
+    "Indexing",
+    'NEXT_PUBLIC_ALLOW_INDEXING is not "true", so robots.txt disallows everything and every page carries noindex. Correct for a review deployment; set it on the real production domain or the launched site will be invisible to Google.',
+  );
+}
+
+/* -------------------------------------------------------------------------- */
 /* 5. Business facts                                                           */
 /* -------------------------------------------------------------------------- */
 const factChecks = [

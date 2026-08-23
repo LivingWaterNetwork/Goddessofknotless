@@ -6,6 +6,7 @@ import { MobileBookBar } from "@/components/layout/MobileBookBar";
 import { defaultSeo } from "@/content/seo";
 import { siteUrl } from "@/content/business";
 import { localBusinessJsonLd, websiteJsonLd } from "@/lib/structured-data";
+import { indexingAllowed } from "@/lib/indexing";
 import "@/styles/globals.css";
 
 /* Self-hosted through next/font: no runtime request to Google, and
@@ -63,7 +64,7 @@ export const metadata: Metadata = {
     images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: defaultSeo.siteName }],
   },
   twitter: { card: "summary_large_image" },
-  robots: { index: true, follow: true },
+  robots: indexingAllowed ? { index: true, follow: true } : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
