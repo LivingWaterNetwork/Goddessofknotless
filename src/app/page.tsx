@@ -3,6 +3,7 @@ import { HairTimePrivacy } from "@/components/sections/HairTimePrivacy";
 import { SignatureSizes } from "@/components/sections/SignatureSizes";
 import { WhatToExpect } from "@/components/sections/WhatToExpect";
 import { ProofTeaser } from "@/components/sections/ProofTeaser";
+import { EditorialBand } from "@/components/sections/EditorialBand";
 import { FounderStory } from "@/components/sections/FounderStory";
 import { FaqTeaser } from "@/components/sections/FaqTeaser";
 import { ClosingCta } from "@/components/sections/ClosingCta";
@@ -17,6 +18,7 @@ export default function HomePage() {
       <SignatureSizes />
       <WhatToExpect />
       <ProofTeaser />
+      <EditorialBand />
       <FounderStory />
       <FaqTeaser />
       <ClosingCta />

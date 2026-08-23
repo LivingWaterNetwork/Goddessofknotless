@@ -41,6 +41,13 @@
   /* Gold used as TEXT on ivory, darkened to clear 4.5:1. */
   --color-gold-text: #75601f;
 
+  /* Review-build placeholder markers. Deep clay, chosen to sit outside the
+     brand palette entirely so a marked image can never read as finished work. */
+  --color-flag: #7d2d20;
+  --color-flag-ink: #ffffff;
+  --color-flag-tint: #fbeeeb;
+  --color-flag-text: #5f2419;
+
   --color-focus: #8a6d1f;
   --color-focus-on-dark: var(--color-gold-soft);
   --color-error: #8c2f22;
@@ -60,6 +67,9 @@
   --text-h3: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem);
   --text-h2: clamp(1.875rem, 1.5rem + 1.9vw, 3rem);
   --text-h1: clamp(2.125rem, 1.6rem + 3.1vw, 4.25rem);
+  /* One oversized display moment per page. Cormorant is a display serif and
+     was never being asked to behave like one. */
+  --text-display: clamp(2.625rem, 1.5rem + 5.2vw, 5.75rem);
 
   /* Spacing rhythm */
   --spacing-section: clamp(4rem, 3rem + 5vw, 7.5rem);
@@ -74,6 +84,30 @@
   --shadow-lift: 0 2px 4px rgb(25 25 25 / 0.05), 0 18px 40px -18px rgb(25 25 25 / 0.2);
 
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  /* Gold as a material rather than a hairline. Foil is DECORATION ONLY —
+     rules, mounts, borders, shapes. Never text: the gradient runs down to
+     #8a6b22, which fails AA on every brand background. */
+  --gradient-foil: linear-gradient(
+    100deg,
+    #8a6b22 0%,
+    #c8a34a 14%,
+    #f0dfae 30%,
+    #c8a34a 46%,
+    #9c7b2c 62%,
+    #ecdcb0 80%,
+    #c8a34a 100%
+  );
+
+  /* Layered emerald, so the dark sections have depth instead of a flat fill. */
+  --gradient-emerald:
+    radial-gradient(115% 95% at 12% 0%, #0b6a4f 0%, transparent 58%),
+    radial-gradient(85% 80% at 98% 100%, #022a1f 0%, transparent 62%),
+    linear-gradient(180deg, #064e3b 0%, #05452f 100%);
+
+  --gradient-onyx:
+    radial-gradient(90% 80% at 50% 0%, #262523 0%, transparent 62%),
+    linear-gradient(180deg, #191919 0%, #121211 100%);
 }
 
 /* --------------------------------------------------------------------------- */
@@ -1794,5 +1828,1050 @@
     flex-wrap: wrap;
     gap: 0.875rem;
     justify-content: center;
+  }
+}
+
+/* ===========================================================================
+   DESIGN PASS
+   Everything below is the second-pass art direction. It sits after the
+   original component layers on purpose: same specificity, later wins, so the
+   original rules stay readable as the record of what was there before.
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Shared material: foil, display type, brand marks, section ornament
+   --------------------------------------------------------------------------- */
+@layer components {
+  .t-display {
+    font-family: var(--font-serif);
+    font-size: var(--text-display);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+  }
+
+  /* Foil is decoration only — see the token comment. Text never sits on it. */
+  .rule-foil {
+    height: 2px;
+    width: min(11rem, 46%);
+    background-image: var(--gradient-foil);
+    border-radius: 2px;
+  }
+  .rule-foil-wide { width: 100%; }
+  .rule-foil-center { margin-inline: auto; }
+
+  .seal-plate {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(3.75rem, 3rem + 2.4vw, 5.5rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--gradient-emerald);
+    box-shadow: 0 0 0 1px rgb(200 163 74 / 0.55), 0 10px 28px -18px rgb(6 78 59 / 0.9);
+    flex: none;
+  }
+  .seal-plate .seal-mark { width: 68%; height: auto; }
+
+  .script-mark { width: 100%; height: auto; }
+  .seal-mark { width: 100%; height: auto; }
+
+  /* Large, cropped frond used as a section watermark. Purely decorative. */
+  .frond-ornament {
+    position: absolute;
+    color: var(--color-gold);
+    opacity: 0.09;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .frond-ornament svg { width: 100%; height: auto; }
+}
+
+/* ---------------------------------------------------------------------------
+   Stock placeholder markers.
+   Loud on purpose: every one of these pictures is another stylist's work.
+   --------------------------------------------------------------------------- */
+@layer components {
+  .stock-marker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    max-width: 100%;
+    pointer-events: none;
+  }
+
+  .stock-marker-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    background: var(--color-flag);
+    color: var(--color-flag-ink);
+    font-family: var(--font-sans);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    padding: 0.375rem 0.5rem;
+    border-radius: var(--radius-sm);
+  }
+  .stock-marker-dot { font-size: 0.75em; }
+
+  /* Opaque onyx, not a translucent scrim: the contrast has to be deterministic
+     rather than depending on whatever is in the photograph underneath. */
+  .stock-marker-note {
+    background: var(--color-onyx);
+    color: var(--color-text-on-dark);
+    font-family: var(--font-sans);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+    padding: 0.3125rem 0.5rem;
+    border-radius: var(--radius-sm);
+    max-width: 20rem;
+  }
+
+  .stock-marker-compact { padding: 0.375rem; }
+
+  .placeholder-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.625rem 1rem;
+    max-width: 68ch;
+    margin-bottom: clamp(1.5rem, 2.5vw, 2.25rem);
+    padding: 1rem 1.25rem;
+    background: var(--color-flag-tint);
+    border: 1px dashed var(--color-flag);
+    border-radius: var(--radius-sm);
+    color: var(--color-flag-text);
+    font-size: var(--text-body-sm);
+    line-height: 1.6;
+  }
+
+  .placeholder-notice-tag {
+    flex: none;
+    font-family: var(--font-sans);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-flag);
+  }
+
+  .placeholder-notice-body { flex: 1 1 22rem; }
+}
+
+/* ---------------------------------------------------------------------------
+   Image frames — gold mount
+   --------------------------------------------------------------------------- */
+@layer components {
+  .image-frame {
+    background: var(--color-surface-sunken);
+    box-shadow: 0 1px 2px rgb(25 25 25 / 0.05), 0 24px 48px -32px rgb(25 25 25 / 0.45);
+  }
+
+  /* A framed print rather than a bare rectangle: hairline gold mount, inset
+     padding, and the photograph sitting inside it. */
+  .image-frame-gold-wrap {
+    position: relative;
+    padding: clamp(0.5rem, 1vw, 0.9rem);
+  }
+  .image-frame-gold-wrap::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--color-gold);
+    border-radius: var(--radius-md);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .image-frame-gold-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: clamp(3rem, 8vw, 5rem);
+    height: 2px;
+    background-image: var(--gradient-foil);
+  }
+  .image-frame-gold-wrap .image-frame { position: relative; }
+}
+
+/* ---------------------------------------------------------------------------
+   Header — foil underline
+   --------------------------------------------------------------------------- */
+@layer components {
+  .site-header {
+    border-bottom: 0;
+    background: color-mix(in srgb, var(--color-ivory) 92%, transparent);
+  }
+  .site-header::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 2px;
+    background-image: var(--gradient-foil);
+    opacity: 0.9;
+  }
+  .site-header { position: sticky; }
+}
+
+/* ---------------------------------------------------------------------------
+   Hero — full-bleed photograph, emerald wash, display type
+   --------------------------------------------------------------------------- */
+@layer components {
+  .hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--gradient-emerald);
+    padding-block: clamp(3rem, 1.5rem + 8vw, 7rem) 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* rem + vw only. No viewport-height units: they are the one thing that can
+       still move a hero around on a phone. */
+    min-height: clamp(36rem, 26rem + 34vw, 51rem);
+  }
+
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .hero-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% 22%;
+  }
+
+  /* Heavy by default: on a phone the copy sits directly over the picture, so
+     the wash — not the photograph — is what guarantees the text contrast. */
+  .hero-photo-wash {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgb(4 44 33 / 0.93) 0%, rgb(4 44 33 / 0.9) 46%, rgb(3 32 24 / 0.95) 100%);
+  }
+
+  .hero-photo-marker { top: auto; bottom: 0; left: 0; }
+
+  .hero-frond-right {
+    position: absolute;
+    color: var(--color-gold);
+    opacity: 0.14;
+    pointer-events: none;
+    bottom: 6rem;
+    right: -6rem;
+    width: clamp(12rem, 30vw, 26rem);
+    transform: rotate(196deg);
+  }
+  .hero-frond-left { display: none; }
+
+  .hero-inner {
+    position: relative;
+    display: block;
+    padding-bottom: clamp(2.5rem, 4vw, 4.5rem);
+  }
+
+  .hero-copy { max-width: 42rem; }
+
+  .hero-script {
+    width: clamp(11rem, 46vw, 21rem);
+    margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .hero-overline { margin-bottom: 1rem; }
+
+  .hero-heading { max-width: 15ch; margin: 0; }
+  .hero-heading-em { font-style: italic; color: var(--color-gold-soft); }
+
+  .hero-rule { margin: clamp(1.5rem, 2.5vw, 2rem) 0 clamp(1.25rem, 2vw, 1.75rem); }
+
+  .hero-subhead {
+    margin-top: 0;
+    max-width: 44ch;
+    color: var(--color-text-on-dark);
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.875rem;
+    margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  }
+  .hero-actions .btn { flex: 1 1 auto; min-width: 14rem; }
+
+  /* The three published figures, as a band across the foot of the hero. */
+  .hero-figures {
+    position: relative;
+    border-top: 1px solid rgb(200 163 74 / 0.32);
+    background: rgb(3 32 24 / 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  .hero-figure-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem 2rem;
+    margin: 0;
+    padding-block: clamp(1.25rem, 2.5vw, 2rem);
+  }
+
+  .hero-figure dt { color: var(--color-gold-text-on-dark); margin-bottom: 0.375rem; }
+
+  .hero-figure-value {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.25rem);
+    line-height: 1;
+    color: var(--color-text-on-dark);
+  }
+  .hero-figure-value-sm { font-size: clamp(1.5rem, 1.1rem + 1.7vw, 2.375rem); }
+
+  .hero-figure-note {
+    margin: 0.5rem 0 0;
+    color: var(--color-text-muted-on-dark);
+  }
+
+  .hero .rebook-link { margin-top: 1.25rem; }
+
+  @media (min-width: 34rem) {
+    .hero-figure-list { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (min-width: 48rem) {
+    .hero-actions .btn { flex: 0 0 auto; }
+  }
+
+  @media (min-width: 64rem) {
+    /* Wide enough for the picture to be seen: the wash steps back on the right
+       and the type keeps a solid emerald column on the left. */
+    .hero-photo-wash {
+      background:
+        linear-gradient(
+          96deg,
+          rgb(4 44 33 / 0.97) 0%,
+          rgb(4 44 33 / 0.94) 36%,
+          rgb(5 62 46 / 0.72) 58%,
+          rgb(5 62 46 / 0.5) 100%
+        ),
+        linear-gradient(180deg, rgb(3 34 26 / 0.35) 0%, transparent 34%, rgb(3 32 24 / 0.6) 100%);
+    }
+    .hero-photo-img { object-position: 74% 24%; }
+    .hero-photo-marker { top: 0; bottom: auto; left: auto; right: 0; align-items: flex-end; }
+    .hero-copy { max-width: 34rem; }
+    .hero-inner { padding-bottom: clamp(3rem, 5vw, 5.5rem); }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Referral bar — seal at a size that reads
+   --------------------------------------------------------------------------- */
+@layer components {
+  .referral-bar {
+    background: var(--color-ivory-warm);
+    border-bottom: 1px solid var(--color-border);
+    padding-block: clamp(1.5rem, 1rem + 1.6vw, 2.5rem);
+  }
+
+  .referral-bar-body {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.875rem, 2vw, 1.5rem);
+  }
+
+  .referral-bar-text {
+    font-family: var(--font-serif);
+    font-size: clamp(1.0625rem, 0.95rem + 0.7vw, 1.5rem);
+    font-style: italic;
+    line-height: 1.35;
+    text-align: left;
+    color: var(--color-emerald);
+    max-width: 46ch;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hair / Time / Privacy triptych
+   --------------------------------------------------------------------------- */
+@layer components {
+  .pillars-section { position: relative; overflow: hidden; }
+
+  .pillars-frond {
+    position: absolute;
+    color: var(--color-gold);
+    opacity: 0.08;
+    pointer-events: none;
+    top: -6rem;
+    left: -8rem;
+    width: clamp(16rem, 38vw, 34rem);
+    transform: rotate(-14deg);
+  }
+  .pillars-frond svg { width: 100%; height: auto; }
+
+  .pillars-section .container-page { position: relative; }
+
+  .pillar-numeral {
+    font-size: clamp(3rem, 2rem + 3.6vw, 5rem);
+    line-height: 0.9;
+    color: var(--color-gold-text);
+    font-style: italic;
+    opacity: 0.9;
+  }
+
+  .pillar-rule { margin-block: 1.25rem 1.5rem; width: 100%; }
+}
+
+/* ---------------------------------------------------------------------------
+   Service cards — image header, price as the figure
+   --------------------------------------------------------------------------- */
+@layer components {
+  .service-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 2px rgb(25 25 25 / 0.03);
+    transition:
+      border-color 0.25s var(--ease-out),
+      box-shadow 0.25s var(--ease-out),
+      transform 0.25s var(--ease-out);
+  }
+
+  .service-card:hover {
+    border-color: var(--color-gold);
+    box-shadow: var(--shadow-lift);
+  }
+
+  /* The two sizes Esther books most carry a foil rule across the top —
+     alongside the written "Most booked" flag, never instead of it. */
+  .service-card-flagged { border-color: var(--color-border-strong); }
+  .service-card-flagged::before {
+    content: "";
+    display: block;
+    height: 3px;
+    background-image: var(--gradient-foil);
+  }
+
+  .service-card-media { position: relative; }
+  .service-card-image { border-radius: 0; box-shadow: none; }
+
+  .service-card-flag {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+    z-index: 2;
+    font-family: var(--font-sans);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-gold-soft);
+    background: var(--color-onyx);
+    border: 0;
+    border-radius: var(--radius-pill);
+    padding: 0.375rem 0.625rem;
+    white-space: nowrap;
+  }
+  .service-card-flag-inline {
+    position: static;
+    color: var(--color-gold-text);
+    background: transparent;
+    border: 1px solid currentColor;
+  }
+
+  .service-card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: clamp(1.25rem, 1rem + 1.1vw, 1.75rem);
+  }
+
+  .service-card-name { margin-bottom: 0.375rem; }
+
+  .service-card-price {
+    margin-top: 1rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.875rem, 1.4rem + 2vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-emerald);
+    white-space: nowrap;
+  }
+
+  .service-card-note { margin-top: 0.625rem; font-size: 0.8125rem; }
+  .service-card-summary { margin-top: 1rem; }
+
+  .service-card-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1.25rem 0 0;
+    padding-top: 1.125rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .service-card-foot { padding-top: 1.25rem; }
+}
+
+/* ---------------------------------------------------------------------------
+   What to expect
+   --------------------------------------------------------------------------- */
+@layer components {
+  .expect-section { background: var(--gradient-emerald); position: relative; }
+
+  .expect-step {
+    grid-template-columns: 3.25rem 1fr;
+    padding-block: 1.5rem;
+    border-top-color: rgb(200 163 74 / 0.22);
+  }
+  .expect-step:last-child { border-bottom-color: rgb(200 163 74 / 0.22); }
+
+  .expect-step-num {
+    font-size: clamp(1.375rem, 1.1rem + 1.1vw, 1.875rem);
+    color: var(--color-gold-soft);
+    line-height: 1.15;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Founder — offset portrait, display-scale pull quote
+   --------------------------------------------------------------------------- */
+@layer components {
+  .founder-quote { margin: 1.5rem 0 0; }
+
+  .founder-quote p {
+    font-family: var(--font-serif);
+    font-size: clamp(1.625rem, 1.1rem + 2.4vw, 3rem);
+    font-style: normal;
+    line-height: 1.14;
+    letter-spacing: -0.02em;
+    color: var(--color-emerald);
+    max-width: 20ch;
+  }
+  .founder-quote em { font-style: italic; color: var(--color-gold-text); }
+
+  .founder-rule { margin-block: clamp(1.5rem, 2.5vw, 2rem); }
+  .founder-body { margin-top: 0; }
+
+  @media (min-width: 64rem) {
+    .founder-inner { grid-template-columns: 0.92fr 1.08fr; align-items: center; }
+    .founder-media { max-width: 28rem; }
+    /* The portrait steps out of the column grid, so the section stops reading
+       as another two-up split. */
+    .founder-copy { transform: translateY(clamp(0rem, 2vw, 2rem)); }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Full-bleed editorial band — the page's one interruption
+   --------------------------------------------------------------------------- */
+@layer components {
+  .band {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--gradient-emerald);
+    padding-block: clamp(4.5rem, 3rem + 9vw, 9rem);
+  }
+
+  .band-photo { position: absolute; inset: 0; z-index: -1; }
+
+  .band-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 32%;
+  }
+
+  .band-wash {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgb(3 32 24 / 0.9) 0%, rgb(4 44 33 / 0.86) 55%, rgb(3 32 24 / 0.94) 100%);
+  }
+
+  .band-marker { top: 0; left: 0; }
+
+  .band-inner { position: relative; text-align: center; }
+  .band-seal { margin: 0 auto clamp(1.25rem, 2.5vw, 2rem); }
+  .band-overline { margin-bottom: 1rem; }
+
+  .band-heading {
+    margin: 0 auto;
+    max-width: 20ch;
+    color: var(--color-text-on-dark);
+  }
+  .band-heading em { font-style: italic; color: var(--color-gold-soft); }
+
+  .band-note {
+    margin: clamp(1.5rem, 2.5vw, 2.25rem) auto 0;
+    max-width: 52ch;
+    color: var(--color-text-muted-on-dark);
+  }
+
+  @media (min-width: 64rem) {
+    .band-wash {
+      background:
+        linear-gradient(90deg, rgb(3 32 24 / 0.92) 0%, rgb(4 44 33 / 0.8) 42%, rgb(4 44 33 / 0.88) 100%);
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Proof strip
+   --------------------------------------------------------------------------- */
+@layer components {
+  .proof-grid { gap: clamp(0.875rem, 2vw, 1.75rem); }
+
+  @media (min-width: 40rem) {
+    /* Staggered baselines, matching the triptych above it. */
+    .proof-grid > li:nth-child(2) { transform: translateY(clamp(1rem, 3vw, 3rem)); }
+    .proof-grid > li:nth-child(3) { transform: translateY(clamp(0.5rem, 1.5vw, 1.5rem)); }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Page masthead
+   --------------------------------------------------------------------------- */
+@layer components {
+  .page-header {
+    position: relative;
+    overflow: hidden;
+    background: var(--gradient-emerald);
+    padding-block: clamp(3rem, 2rem + 5vw, 6rem);
+  }
+
+  .page-header-frond {
+    position: absolute;
+    color: var(--color-gold);
+    opacity: 0.12;
+    pointer-events: none;
+    top: -4rem;
+    right: -5rem;
+    width: clamp(11rem, 26vw, 22rem);
+    transform: rotate(172deg);
+  }
+  .page-header-frond svg { width: 100%; height: auto; }
+
+  .page-header-inner { position: relative; }
+
+  .page-header-title { margin-top: 1.25rem; max-width: 20ch; }
+  .page-header-rule { margin-top: clamp(1.5rem, 2.5vw, 2rem); }
+  .page-header-lede { margin-top: clamp(1.25rem, 2vw, 1.75rem); }
+
+  .page-header-figures {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem 2.5rem;
+    margin: clamp(2rem, 3.5vw, 3rem) 0 0;
+    padding-top: clamp(1.5rem, 2.5vw, 2rem);
+    border-top: 1px solid rgb(200 163 74 / 0.3);
+  }
+  .page-header-figures dt { color: var(--color-gold-text-on-dark); margin-bottom: 0.5rem; }
+  .page-header-figures dd {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(1.625rem, 1.2rem + 1.9vw, 2.625rem);
+    line-height: 1;
+    color: var(--color-text-on-dark);
+  }
+
+  @media (min-width: 34rem) {
+    .page-header-figures { grid-template-columns: repeat(3, 1fr); }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The menu — the price table as an editorial artefact
+   --------------------------------------------------------------------------- */
+@layer components {
+  .menu-section {
+    position: relative;
+    overflow: hidden;
+    background: var(--gradient-emerald);
+  }
+
+  .menu-frond {
+    position: absolute;
+    color: var(--color-gold);
+    opacity: 0.1;
+    pointer-events: none;
+    bottom: -8rem;
+    left: -7rem;
+    width: clamp(14rem, 32vw, 28rem);
+    transform: rotate(24deg);
+  }
+  .menu-frond svg { width: 100%; height: auto; }
+
+  .menu-section .container-page { position: relative; }
+  .menu-head { margin-bottom: 1.5rem; }
+  .menu-rule { margin: 0 auto clamp(2rem, 3.5vw, 3rem); width: min(9rem, 40%); }
+
+  .menu-section .table-scroll {
+    margin-top: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .price-table { min-width: 46rem; }
+
+  .price-table thead th {
+    background: transparent;
+    color: var(--color-gold-text-on-dark);
+    border-bottom: 1px solid var(--color-gold);
+    padding: 0 1rem 0.875rem;
+    letter-spacing: 0.16em;
+  }
+
+  .price-table th,
+  .price-table td {
+    padding: 1.375rem 1rem;
+    border-bottom: 1px solid rgb(200 163 74 / 0.2);
+    font-size: var(--text-body);
+    vertical-align: baseline;
+  }
+
+  .price-table tbody th {
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 1.15rem + 0.9vw, 1.875rem);
+    font-weight: 400;
+    color: var(--color-text-on-dark);
+    white-space: nowrap;
+  }
+  .price-table tbody th a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-gold);
+  }
+  .price-table tbody th a:hover { border-bottom-width: 2px; }
+
+  .price-table td { color: var(--color-text-muted-on-dark); }
+
+  /* The prices are the reason this page exists. They get the serif and the
+     size; everything else in the row is metadata around them. */
+  .price-table-figure {
+    font-family: var(--font-serif);
+    font-size: clamp(1.375rem, 1.15rem + 0.9vw, 1.875rem);
+    color: var(--color-gold-soft);
+    white-space: nowrap;
+  }
+
+  .price-table-flag {
+    display: block;
+    margin-top: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-gold-text-on-dark);
+    white-space: nowrap;
+  }
+
+  /* Weight, not colour alone: the written flag above carries the meaning. */
+  .price-row-flagged { background: rgb(200 163 74 / 0.09); }
+  .price-row-flagged th:first-child { box-shadow: inset 3px 0 0 0 var(--color-gold); }
+
+  .price-table-badge { margin-left: 0.5rem; }
+
+  .menu-foot {
+    margin-top: clamp(1.5rem, 2.5vw, 2rem);
+    max-width: 60ch;
+    color: var(--color-text-muted-on-dark);
+  }
+
+  .addon dt { color: var(--color-onyx); }
+  .addon-price {
+    font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);
+    color: var(--color-emerald);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Service detail
+   --------------------------------------------------------------------------- */
+@layer components {
+  .detail-aside-stats {
+    display: grid;
+    gap: 1.125rem;
+    margin: 1.75rem 0 0;
+    padding: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .detail-aside-stats dt { color: var(--color-text-muted); margin-bottom: 0.25rem; }
+  .detail-aside-stats dd {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--text-h4);
+    color: var(--color-emerald);
+  }
+  .detail-aside-figure { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem) !important; line-height: 1.1; }
+}
+
+/* ---------------------------------------------------------------------------
+   About — drop cap, seal
+   --------------------------------------------------------------------------- */
+@layer components {
+  .about-lede {
+    font-size: clamp(1.5rem, 1.15rem + 1.6vw, 2.25rem);
+    line-height: 1.22;
+    max-width: 24ch;
+  }
+
+  /* Editorial drop cap. Decorative styling of a real first letter, so nothing
+     is hidden from a screen reader and the paragraph still reads normally. */
+  .about-drop-cap::first-letter {
+    float: left;
+    font-family: var(--font-serif);
+    font-size: 3.9em;
+    line-height: 0.82;
+    padding-right: 0.08em;
+    margin-top: 0.06em;
+    color: var(--color-emerald);
+  }
+
+  .standard-section { position: relative; overflow: hidden; background: var(--gradient-emerald); }
+  .standard-inner { display: flex; flex-direction: column; align-items: center; }
+  .standard-seal { margin-bottom: clamp(1.5rem, 2.5vw, 2.25rem); display: block; }
+  .standard-seal .seal-mark { width: clamp(4rem, 9vw, 6.5rem); }
+}
+
+/* ---------------------------------------------------------------------------
+   Experience
+   --------------------------------------------------------------------------- */
+@layer components {
+  .standard-num {
+    font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.75rem);
+    color: var(--color-gold-text);
+    line-height: 1;
+  }
+  .standard { grid-template-columns: 3.75rem 1fr; padding-block: 1.75rem; }
+}
+
+/* ---------------------------------------------------------------------------
+   Gallery
+   --------------------------------------------------------------------------- */
+@layer components {
+  .gallery-grid { gap: clamp(0.625rem, 1.4vw, 1.125rem); }
+  .gallery-cell-wide { grid-column: span 2; }
+
+  .gallery-open { border-radius: var(--radius-md); overflow: hidden; }
+
+  .gallery-status {
+    color: var(--color-text-muted);
+    letter-spacing: 0.14em;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Closing CTA
+   --------------------------------------------------------------------------- */
+@layer components {
+  .closing {
+    position: relative;
+    overflow: hidden;
+    background: var(--gradient-onyx);
+    padding-block: clamp(4rem, 2.5rem + 6vw, 7.5rem);
+  }
+
+  .closing-seal { display: block; margin-bottom: clamp(1.25rem, 2.5vw, 2rem); }
+  .closing-seal .seal-mark { width: clamp(3.5rem, 8vw, 5.5rem); }
+
+  .closing-heading {
+    margin-top: 1rem;
+    max-width: 18ch;
+    font-size: clamp(2.25rem, 1.6rem + 3vw, 4rem);
+    line-height: 1.05;
+  }
+
+  .closing-rule { margin: clamp(1.5rem, 2.5vw, 2rem) auto 0; width: min(8rem, 40%); }
+  .closing-lede { margin-top: clamp(1.25rem, 2vw, 1.75rem); }
+}
+
+/* ---------------------------------------------------------------------------
+   Footer
+   --------------------------------------------------------------------------- */
+@layer components {
+  .site-footer { background: var(--gradient-emerald); }
+  .site-footer-rule {
+    height: 2px;
+    background-image: var(--gradient-foil);
+    opacity: 0.85;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Design-pass corrections, from looking at the screenshots
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* The headline sets its own line breaks. It must not also wrap inside one:
+     at 1440 the first line broke after "Natural-" and pushed the booking
+     buttons off the first viewport. */
+  .hero-heading { max-width: 19ch; font-size: clamp(2.375rem, 1.5rem + 3.9vw, 4.75rem); }
+
+  @media (min-width: 64rem) {
+    .hero-copy { max-width: 38rem; }
+  }
+
+  /* The band photograph was disappearing under its own wash. Enough to hold
+     the type, not so much that the picture stops being a picture. */
+  .band-wash {
+    background:
+      linear-gradient(180deg, rgb(3 32 24 / 0.82) 0%, rgb(4 44 33 / 0.7) 52%, rgb(3 30 22 / 0.88) 100%);
+  }
+  @media (min-width: 64rem) {
+    .band-wash {
+      background:
+        linear-gradient(90deg, rgb(3 30 22 / 0.86) 0%, rgb(4 44 33 / 0.62) 45%, rgb(3 30 22 / 0.84) 100%);
+    }
+  }
+  .band-photo-img { object-position: 50% 28%; }
+
+  /* Referral line: seal, rule, statement, rule — centred as one unit. */
+  .referral-bar-inner { justify-content: center; }
+  .referral-bar-body { flex: 0 1 auto; }
+  .referral-bar-mark { max-width: 5rem; }
+
+  .site-footer-logo { width: clamp(12rem, 34vw, 18rem); }
+}
+
+@layer components {
+  /* Reveal: visible by default, hidden only once the client has armed it.
+     See src/components/ui/Reveal.tsx for why.
+
+     The transition belongs ONLY on the shown state. Left on the base rule it
+     also animates the arming step, so every wrapped block faded from 1 to 0
+     over 700ms on load — a visible flash, and long enough that axe sampled
+     the triptych mid-fade and read its body copy at 4.22:1. */
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .reveal[data-armed="true"] { opacity: 0; transform: translateY(14px); }
+  .reveal[data-armed="true"][data-shown="true"] {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal[data-armed="true"] { opacity: 1; transform: none; transition: none; }
+  }
+}
+
+@layer components {
+  /* `.price-table td` (0,1,1) was out-specifying `.price-table-figure` (0,1,0),
+     so the prices — the whole point of the page — were rendering at body size
+     in muted grey. */
+  .price-table td.price-table-figure {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.125rem);
+    line-height: 1.05;
+    color: var(--color-gold-soft);
+    white-space: nowrap;
+  }
+
+  .standard-rule { margin-top: clamp(1.75rem, 3vw, 2.5rem); }
+
+  /* The studio frame was the one photograph on the site rendering postage-stamp
+     sized. It is landscape; give it the room a landscape image needs. */
+  @media (min-width: 64rem) {
+    .prep-inner { grid-template-columns: 1.05fr 0.95fr; align-items: center; }
+    .expect-media { position: static; align-self: center; }
+  }
+
+  /* The size guide is a decision tool sitting between two showpieces. A foil
+     head rule stops it reading as an unstyled form. */
+  .size-guide { position: relative; overflow: hidden; }
+  .size-guide::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 3px;
+    background-image: var(--gradient-foil);
+  }
+  .size-guide-title { font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.125rem); }
+}
+
+@layer components {
+  /* The phone wash was so heavy the photograph read as a flat green field.
+     It stays near-opaque behind the copy — which occupies the top two-thirds
+     on a phone — and lifts only over the lower band, where the picture is all
+     that is there. */
+  .hero-photo-wash {
+    background:
+      linear-gradient(
+        180deg,
+        rgb(4 44 33 / 0.93) 0%,
+        rgb(4 44 33 / 0.9) 46%,
+        rgb(4 44 33 / 0.74) 74%,
+        rgb(3 32 24 / 0.9) 100%
+      );
+  }
+  .hero-photo-img { object-position: 58% 16%; }
+
+  @media (min-width: 64rem) {
+    /* Wide enough for the picture to be seen: the wash steps back on the right
+       and the type keeps a solid emerald column on the left. */
+    .hero-photo-wash {
+      background:
+        linear-gradient(
+          96deg,
+          rgb(4 44 33 / 0.97) 0%,
+          rgb(4 44 33 / 0.94) 36%,
+          rgb(5 62 46 / 0.7) 58%,
+          rgb(5 62 46 / 0.46) 100%
+        ),
+        linear-gradient(180deg, rgb(3 34 26 / 0.32) 0%, transparent 34%, rgb(3 32 24 / 0.58) 100%);
+    }
+    .hero-photo-img { object-position: 74% 24%; }
+  }
+}
+
+@layer components {
+  /* Every layered-gradient surface needs a solid `background-color` underneath
+     it as well. Without one the element has no resolvable background colour,
+     so a contrast checker walks past it to the ivory <body> and reports light
+     text on a light background — which is how the emerald sections started
+     failing axe the moment the flat fills became gradients. */
+  .hero,
+  .band,
+  .page-header,
+  .menu-section,
+  .expect-section,
+  .standard-section,
+  .seal-plate {
+    background-color: var(--color-emerald);
+  }
+
+  .site-footer { background-color: var(--color-emerald); }
+  .closing { background-color: var(--color-onyx); }
+
+  /* The washes themselves must stay translucent — they sit ON TOP of the
+     photograph. The solid colour belongs on the section beneath it, above.
+     The figures band is the exception: it is opaque by design, so the three
+     published numbers never have to compete with whatever the picture is
+     doing behind them. */
+  .hero-figures {
+    background: var(--color-emerald-deep);
+    backdrop-filter: none;
   }
 }

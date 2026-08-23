@@ -1,11 +1,12 @@
 import { Section, SectionHeading } from "@/components/ui/Section";
+import { Frond } from "@/components/ui/Frond";
 import { Reveal } from "@/components/ui/Reveal";
 
 /**
  * The strategic signature of the site.
  *
- * Deliberately NOT three icon cards. It reads as an editorial triptych: a large
- * serif numeral, a hairline rule, and copy that widens as you move down —
+ * Deliberately NOT three icon cards. It reads as an editorial triptych: an
+ * oversized foil numeral, a gold rule, and copy that steps down the page —
  * carrying the brand's positioning line ("for women whose hair, time and
  * privacy matter") as structure rather than as a slogan.
  */
@@ -35,7 +36,11 @@ const pillars = [
 
 export function HairTimePrivacy() {
   return (
-    <Section tone="white" id="standards">
+    <Section tone="white" id="standards" className="pillars-section">
+      <span className="pillars-frond" aria-hidden="true">
+        <Frond />
+      </span>
+
       <div className="container-page">
         <SectionHeading
           overline="The Standard"
@@ -57,7 +62,7 @@ export function HairTimePrivacy() {
                 <p className="pillar-numeral" aria-hidden="true">
                   {pillar.numeral}
                 </p>
-                <div className="rule-gold pillar-rule" />
+                <div className="rule-foil pillar-rule" />
                 <h3 className="t-h3 pillar-title">{pillar.title}</h3>
                 <p className="pillar-lede">{pillar.lede}</p>
                 <p className="t-body-sm t-muted pillar-body">{pillar.body}</p>

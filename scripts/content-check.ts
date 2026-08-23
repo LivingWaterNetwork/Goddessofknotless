@@ -16,6 +16,7 @@ import { services, addOns } from "../src/content/services";
 import { faqs } from "../src/content/faqs";
 import { policies } from "../src/content/policies";
 import { gallery } from "../src/content/gallery";
+import { stockPlaceholders } from "../src/content/placeholder-images";
 import { testimonials } from "../src/content/testimonials";
 import { business } from "../src/content/business";
 
@@ -111,7 +112,26 @@ const missingImages = gallery.filter((g) => g.src === null);
 if (missingImages.length > 0) {
   blocker(
     "Photography",
-    `${missingImages.length} of ${gallery.length} gallery slots have no real image. Placeholders must not reach production. See docs/PHOTO_SHOOT_BRIEF.md.`,
+    `${missingImages.length} of ${gallery.length} gallery slots have no image at all. See docs/PHOTO_SHOOT_BRIEF.md.`,
+  );
+}
+
+/* A slot holding a picture is NOT a slot that is done. The review build fills
+   every frame with stock photography so the design can be judged; none of it
+   is Esther's work, so every one of those frames must keep blocking launch.
+   Emptying src/content/placeholder-images.ts is what clears this. */
+if (stockPlaceholders.length > 0) {
+  blocker(
+    "Photography",
+    `${stockPlaceholders.length} STOCK PLACEHOLDER photographs are in place. They depict other stylists' work and must never publish. Replace them with Esther's own permissioned photography and empty src/content/placeholder-images.ts. See docs/ASSET_INVENTORY.md.`,
+  );
+}
+
+const placeholderSlots = gallery.filter((g) => g.status === "placeholder");
+if (placeholderSlots.length > 0) {
+  blocker(
+    "Photography",
+    `${placeholderSlots.length} of ${gallery.length} gallery slots are still marked "placeholder": ${placeholderSlots.map((g) => g.id).join(", ")}.`,
   );
 }
 for (const item of gallery) {

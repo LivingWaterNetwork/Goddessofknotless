@@ -1,41 +1,65 @@
+import Image from "next/image";
 import { BookButton, RebookLink } from "@/components/ui/BookButton";
 import { ButtonLink } from "@/components/ui/Button";
-import { ImageFrame } from "@/components/ui/ImageFrame";
+import { Frond } from "@/components/ui/Frond";
+import { ScriptMark } from "@/components/ui/BrandMark";
+import { StockMarker } from "@/components/ui/StockMarker";
 import { business } from "@/content/business";
-import { priceFloorUsd } from "@/content/services";
-import { usd } from "@/lib/format";
+import { heroImage } from "@/content/placeholder-images";
+import { priceFloorUsd, servicesByOrder } from "@/content/services";
+import { durationRange, usd } from "@/lib/format";
 
 /**
  * First viewport.
  *
- * Communicates service, location, differentiator, and the booking path in
- * static markup — no animation is required to read or act on any of it. The
- * frond line art is inline SVG (not a 1MB flat-colour JPEG as in the deck), so
- * it costs nothing and scales cleanly.
+ * A full-bleed photograph under an emerald wash, with the script mark, the
+ * headline and the booking path over it. The type sits in its own scrimmed
+ * column, so service, location, differentiator and booking path are all
+ * legible in static markup whether or not the photograph ever loads — the
+ * image is decoration on top of a solid emerald field, not the field itself.
  */
 export function Hero() {
+  const durations = servicesByOrder.map((s) => s.duration);
+  const shortest = Math.min(...durations.map((d) => d.fromHours));
+  const longest = Math.max(...durations.map((d) => d.toHours));
+
   return (
     <section id="hero" className="hero on-dark" aria-labelledby="hero-heading">
-      <span className="hero-frond hero-frond-left" aria-hidden="true">
-        <Frond />
-      </span>
+      <div className="hero-photo">
+        <Image
+          src={heroImage.src}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          quality={78}
+          className="hero-photo-img"
+        />
+        <span className="hero-photo-wash" aria-hidden="true" />
+        <StockMarker className="hero-photo-marker" />
+      </div>
+
       <span className="hero-frond hero-frond-right" aria-hidden="true">
         <Frond />
       </span>
 
       <div className="container-page hero-inner">
         <div className="hero-copy">
+          <ScriptMark className="hero-script" priority sizes="(min-width: 64rem) 24rem, 62vw" />
+
           <p className="overline hero-overline">
             {business.neighborhood.value} · {business.city.value} · By Appointment
           </p>
 
-          <h1 id="hero-heading" className="t-h1 hero-heading">
+          <h1 id="hero-heading" className="t-display hero-heading">
             Natural-looking braids.
             <br />
             A calm experience.
             <br />
             <em className="hero-heading-em">Results you can trust.</em>
           </h1>
+
+          <div className="rule-foil hero-rule" />
 
           <p className="hero-subhead t-body-lg">
             Knotless braids in Chicago&rsquo;s West Loop, delivered with gentle care, reliable
@@ -49,48 +73,35 @@ export function Hero() {
             </ButtonLink>
           </div>
 
-          <div className="hero-meta">
-            <p className="t-body-sm">
-              <span className="t-label hero-meta-label">Every size, every price</span>
-              Nine braid-count sizes, from {usd(priceFloorUsd)}. Real ranges and real appointment
-              times, published before you book.
-            </p>
-            <RebookLink placement="hero" />
-          </div>
-        </div>
-
-        <div className="hero-media">
-          <ImageFrame
-            src={null}
-            alt=""
-            width={1000}
-            height={1300}
-            status="placeholder"
-            tone="deep"
-            priority
-            label="Hero: finished knotless braids, natural density, clean parts"
-            note="The single most important missing asset. See docs/PHOTO_SHOOT_BRIEF.md, shot 01."
-            sizes="(min-width: 64rem) 40vw, (min-width: 48rem) 45vw, 100vw"
-            className="hero-media-frame"
-          />
+          <RebookLink placement="hero" />
         </div>
       </div>
 
+      {/* The differentiator, set as three figures rather than a sentence:
+          almost no competitor publishes any of them. */}
+      <div className="hero-figures">
+        <div className="container-page hero-figures-inner">
+          <dl className="hero-figure-list t-nums">
+            <div className="hero-figure">
+              <dt className="t-label">Braid-count sizes</dt>
+              <dd className="hero-figure-value">{servicesByOrder.length}</dd>
+              <dd className="hero-figure-note t-body-sm">Jumbo through Microbraids</dd>
+            </div>
+            <div className="hero-figure">
+              <dt className="t-label">Published prices from</dt>
+              <dd className="hero-figure-value">{usd(priceFloorUsd)}</dd>
+              <dd className="hero-figure-note t-body-sm">Real ranges, before you book</dd>
+            </div>
+            <div className="hero-figure">
+              <dt className="t-label">Appointment window</dt>
+              <dd className="hero-figure-value hero-figure-value-sm">
+                {durationRange(shortest, longest)}
+              </dd>
+              <dd className="hero-figure-note t-body-sm">Quoted honestly, held to</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
     </section>
-  );
-}
-
-function Frond() {
-  return (
-    <svg viewBox="0 0 240 420" fill="none" aria-hidden="true">
-      <g stroke="currentColor" strokeWidth="1.1" strokeLinecap="round">
-        <path d="M28 412C58 322 96 232 148 152 176 108 204 68 226 34" />
-        <path d="M148 152c-18-34-22-70-14-104 22 26 34 58 32 92" />
-        <path d="M120 210c-24-28-34-62-30-96 26 22 42 52 44 86" />
-        <path d="M92 268c-28-22-42-54-42-88 29 17 49 45 55 79" />
-        <path d="M64 330c-31-16-50-45-55-79 31 12 55 36 65 69" />
-        <path d="M176 104c-12-30-12-62 0-92 18 24 25 54 19 84" />
-      </g>
-    </svg>
   );
 }

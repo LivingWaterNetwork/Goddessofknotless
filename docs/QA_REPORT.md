@@ -1,6 +1,8 @@
 # QA Report
 
-Date: 23 August 2026. All results below are from a **production build** (`pnpm build` +
+Date: 23 August 2026. Updated the same day after the visual design pass — see
+**"Design pass — second round"** at the foot of this document for what changed, including two
+build-configuration defects that had been shipping an almost entirely unstyled site. All results below are from a **production build** (`pnpm build` +
 `pnpm start`), not the development server.
 
 ---
@@ -188,12 +190,13 @@ single-column flow; the preview verification badges sitting exactly where Esther
 
 ## Content gate
 
-`pnpm content:check` reports **6 blockers** and **12 items awaiting confirmation**. This is the
+`pnpm content:check` reports **7 blockers** and **12 items awaiting confirmation**. This is the
 expected and correct state for a first draft — the gate exists to make these visible, and it
 fails a production build while any blocker remains.
 
 Blockers: no booking URL; four unwritten policies (cancellation, late arrival, guests/children,
-no-show); all twelve gallery slots without real photography.
+no-show); and the stock placeholder photography — counted twice, once for the registry and once
+for the twelve gallery slots still marked `placeholder`.
 
 Full detail and sign-off checklist in `CONTENT_CONFIRMATIONS.md`.
 
@@ -217,3 +220,169 @@ Full detail and sign-off checklist in `CONTENT_CONFIRMATIONS.md`.
    safe-area insets.
 6. **Browser coverage is Chromium only.** Add WebKit and Firefox projects to the Playwright
    config for broader confidence.
+
+---
+---
+
+# Design pass — second round
+
+Written after the client-side reviewer rejected the first draft on visual grounds
+("very plain, very boring, in no way that of a $10,000 website"). Brief:
+`docs/HANDOFF_DESIGN_PASS.md`.
+
+## The two defects that caused most of it
+
+Before any art direction was touched, `pnpm qa` was run as instructed. It failed on its first
+step, and pulling that thread found the real story.
+
+### 1. Tailwind had never run in a build. `postcss.config.mjs` was not in the repository.
+
+`.gitignore` carried `/*.mjs` — added for local QA scratch scripts. It also matched
+`postcss.config.mjs` and `eslint.config.mjs`, so neither was ever committed. They existed only on
+the machine that built the first draft.
+
+Without a PostCSS config nothing processed Tailwind v4's `@theme` and `@utility` at-rules. The
+stylesheet still shipped, so the site looked *styled enough* to pass a glance, but:
+
+- `@theme { --color-emerald: … }` was emitted verbatim. **There was no `:root` block**, so every
+  one of the ~40 design tokens resolved to nothing. `color: var(--color-text-on-dark)` was an
+  invalid declaration, and text on the emerald sections fell back to inherited near-black on
+  near-black.
+- `@utility container-page { … }` was emitted as a **type selector** named `container-page`,
+  matching no element. The site had no page container: no max-width, no gutters, content flush to
+  both edges of the viewport at every breakpoint.
+
+Verified against the live deployment before changing anything —
+`curl`ing the production stylesheet returned `:root` **zero times** and
+`container-page{width: 100%; …}` as a bare type selector. The reviewer was looking at a site with
+no palette and no layout container. Fixed by committing `postcss.config.mjs` and un-ignoring it.
+
+**This is the single largest cause of "very plain".** It is also why the pre-existing screenshots
+in `docs/qa/` looked unstyled.
+
+### 2. `pnpm lint` could not run. `eslint.config.mjs` was not in the repository either.
+
+Same cause. `pnpm qa` therefore aborted at step one on any fresh clone, taking typecheck, tests,
+content gate and build down with it. Restored as a flat config importing
+`eslint-config-next/core-web-vitals` and `…/typescript` directly, and un-ignored.
+
+Both files are now explicitly negated in `.gitignore`, with a comment saying why.
+
+### 3. A content robustness bug found on the way
+
+`.reveal` started at `opacity: 0` in the stylesheet and was brought back by an
+`IntersectionObserver`. If the bundle never ran — blocked script, hydration failure, a slow
+connection giving up — the Hair / Time / Privacy triptych was **permanently invisible**. The
+hidden state is now armed from the client instead, so "no JavaScript" degrades to "no animation"
+rather than "no content". The transition was also moved onto the shown state only; on the base
+rule it animated the arming step too, fading every wrapped block from 1 to 0 over 700 ms on load.
+
+## Photography — stock placeholders, authorised for review only
+
+All 18 image frames (hero, process, two founder portraits, studio, one full-bleed editorial band,
+and 12 gallery slots) now hold stock photography from Pexels. Every file, its source URL and its
+licence are listed in `ASSET_INVENTORY.md`.
+
+They are marked, not slipped in:
+
+| Guarantee | How |
+|---|---|
+| Visible on the image | Red **STOCK PLACEHOLDER** tag on every frame, plus "Not Esther's work — for layout review only" at full size |
+| Announced to screen readers | The marker is real text, and every `alt` begins "Stock placeholder photograph, not Esther's work — …" |
+| Stated in prose | A written notice above the grid on `/gallery`, `/services`, and the homepage proof strip |
+| Still blocks launch | `CONTENT_MODE=production pnpm content:check` **exits 1**. The gate previously blocked on `src === null`, which filling the frames would have quietly satisfied; it now blocks on the placeholder *registry* and on `status: "placeholder"`, neither of which an image file can clear |
+| Locked by tests | Unit tests assert every gallery item stays `status: "placeholder"`, carries "stock placeholder" in its alt, and is registered. E2E asserts 12 visible markers, the prose notice, and that the marker follows the image into the lightbox |
+
+## Art direction
+
+| Was | Now |
+|---|---|
+| Text-left / dark-box-right hero, no photograph | Full-bleed photograph under a layered emerald wash, script logo above the fold at 21 rem, display serif at up to 4.75 rem, and the three published figures — 9 sizes, from $150, 1½–14 hours — set as numerals across the foot of the first viewport |
+| The script logo appeared only in the footer, as a flat gold plate on solid emerald | Keyed to transparency (`logo-script-gold.png`, `seal-gold.png`) so it can sit over photography. Now in the hero, the referral line, the editorial band, the closing CTA and the footer |
+| Gold only ever a 1px hairline | A foil gradient (`--gradient-foil`) as section rules, card top rules, image mounts, the header underline, the size-guide head. Decoration only — the gradient runs to `#8a6b22`, which fails AA on both brand backgrounds, so no text is ever set on it |
+| Flat emerald fills | Layered `--gradient-emerald` / `--gradient-onyx` on every dark section |
+| Frond motif at 16% opacity, barely perceptible | Large, cropped, rotated section watermarks on the masthead, the triptych and the price menu |
+| Nine white rectangles with a 1px border | Cards with a photographic header, the price set as a 2.75 rem serif figure, and a foil top rule on the two most-booked sizes |
+| The price table as a competent HTML table | An editorial menu on emerald: serif size names, gold-soft price figures, generous leading, gold rules, and the most-booked rows weighted with a foil left rule *and* a written "Most booked" flag — never colour alone |
+| Every section the same shape | Two rhythm breaks per page: a full-bleed photographic band with a display-scale line on the homepage, an offset gold-mounted portrait in the founder block, a drop cap on the About narrative, and figure rows in every masthead |
+
+Kept, per the brief: the triptych with its staggered baselines, the published-prices strategy, the
+ivory / emerald / onyx structure, and the honestly disabled booking buttons.
+
+## Constraints — verified after the pass
+
+| Constraint | Status |
+|---|---|
+| No price, duration, braid count or add-on figure changed | ✅ `src/content/services.ts` untouched; `git diff` shows no change |
+| Both flagged discrepancies still flagged | ✅ Medium-Fine and Extra Small still `needs-confirmation`, still render review badges — now in the price menu *and* on the detail page |
+| No testimonials, ratings, review counts or client numbers | ✅ None added. The hero figures are derived from the service table, not invented |
+| No `aggregateRating` / `review` structured data | ✅ Unchanged |
+| No address, phone, email or hours | ✅ Unchanged |
+| Forbidden copy | ✅ `pnpm content:check` clean on the forbidden scan |
+| Gold text tokens used for gold *text* | ✅ Foil is decoration only; text uses `--color-gold-text` / `--color-gold-text-on-dark` |
+| Zero axe violations | ✅ 0 across all 10 routes, plus open-menu and open-accordion states |
+| Targets ≥ 24px, heading order, reduced motion, no colour-only information | ✅ All asserted tests pass |
+| CLS 0.000 | ✅ Measured 0.0000 on six routes × two viewports |
+| `NEXT_PUBLIC_ALLOW_INDEXING` not set | ✅ Not set. `robots.txt` still `Disallow: /`, every page still `noindex` |
+| Placeholders still block production | ✅ `CONTENT_MODE=production pnpm content:check` exits 1 |
+
+### One a11y regression caught and fixed during the pass
+
+Making the emerald sections gradients removed their resolvable `background-color`, so axe walked
+past them to the ivory `<body>` and reported light-on-light across eight nodes. Every layered
+surface now carries an explicit `background-color` under its gradient. The photo washes keep
+theirs transparent — they sit *on top of* the picture — and the solid colour lives on the section
+beneath.
+
+## Measurements after the pass
+
+Production build, `PerformanceObserver`, full-page scroll:
+
+| Route | Mobile CLS / LCP | Desktop CLS / LCP |
+|---|---|---|
+| `/` | 0.0000 / 332 ms | 0.0000 / 284 ms |
+| `/services` | 0.0000 / 212 ms | 0.0000 / 208 ms |
+| `/services/medium-large` | 0.0000 / 196 ms | 0.0000 / 180 ms |
+| `/gallery` | 0.0000 / 180 ms | 0.0000 / 236 ms |
+| `/about` | 0.0000 / 196 ms | 0.0000 / 228 ms |
+| `/experience` | 0.0000 / 132 ms | 0.0000 / 212 ms |
+
+LCP rose from 180 ms to 284–332 ms on `/` — the hero photograph is now the LCP element rather than
+the `<h1>`, which is the correct trade. It is the only image with `priority`; everything else
+lazy-loads. Source photography totals 1.8 MB before `next/image`, which serves AVIF/WebP at
+responsive widths.
+
+## Test results after the pass
+
+```
+pnpm lint          clean
+pnpm typecheck     clean
+pnpm test          39 passed   (37 + 2 new placeholder-integrity tests)
+pnpm content:check 7 blockers, 12 confirmations — expected
+pnpm build         24 routes, zero warnings
+pnpm test:e2e      114 passed, 6 skipped, 0 failed, 0 axe violations
+```
+
+The build now emits **zero warnings**. It previously emitted five "Unknown at rule: @utility"
+parse warnings, which were the visible symptom of the missing PostCSS config.
+
+## Visual QA — second round
+
+All eight principal routes re-captured at 390×844, 768×1024, 1440×900 and 1920×1080 and reviewed
+by eye. The 32 files in `docs/qa/` are replaced.
+
+| Found by looking | Fix |
+|---|---|
+| Hero headline wrapped to five lines at 1440, pushing both CTAs off the first viewport | Capped the display size at 4.75 rem and widened the measure to 19ch |
+| The full-bleed band's photograph was invisible under its own wash | Lowered wash opacity and switched to a horizontal gradient on wide screens |
+| The mobile hero wash was heavy enough that the braids read as a flat green field | Graded it so it stays near-opaque behind the copy and lifts over the lower band |
+| Price figures rendered at body size in muted grey — `.price-table td` (0,1,1) out-specified `.price-table-figure` (0,1,0) | Qualified the selector. The prices are the page |
+| Two seal-bearing centred dark sections stacked on `/about` | Removed the duplicate; the section closes on a foil rule instead |
+| The studio photograph rendered postage-stamp sized in a narrow column | Rebalanced the preparation grid |
+| The footer logo showed its emerald plate as a rectangle against the new gradient | Switched to the transparent script mark |
+
+Screenshot harness note: the stylesheet sets `scroll-behavior: smooth`, which makes a scripted
+scroll ease rather than jump — the reveal observers never saw the sections pass, and the triptych
+captured blank. The capture script now disables smooth scrolling, forces lazy images eager before
+scrolling, and hides the fixed mobile booking bar, which otherwise smears across a stitched
+full-page capture. All three are capture artefacts, not site behaviour.

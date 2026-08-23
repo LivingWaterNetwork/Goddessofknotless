@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ImageFrame } from "./ImageFrame";
+import { isWideGalleryItem } from "@/content/gallery";
 import type { GalleryItem } from "@/content/types";
 import { track } from "@/lib/analytics";
 
@@ -29,7 +30,7 @@ export function Gallery({
     active === "all" ? items : items.filter((i) => i.serviceSlugs.includes(active));
 
   const openItem = visible.find((i) => i.id === openId) ?? null;
-  const hasRealImages = items.some((i) => i.src !== null);
+  const allPlaceholders = items.length > 0 && items.every((i) => i.status === "placeholder");
 
   const close = useCallback(() => {
     setOpenId(null);
@@ -101,17 +102,20 @@ export function Gallery({
         </div>
       ) : null}
 
-      {/* Counts placeholders honestly: calling twelve empty frames "12 images"
-          would read as twelve photographs that failed to load. */}
+      {/* Counts honestly. While the frames hold stock stand-ins, saying
+          "12 images" would imply twelve photographs of Esther's work. */}
       <p className="gallery-status" role="status">
-        {hasRealImages
-          ? `${visible.length} ${visible.length === 1 ? "image" : "images"}${active === "all" ? "" : " in this size"}`
-          : `${visible.length} ${visible.length === 1 ? "slot" : "slots"} reserved${active === "all" ? "" : " in this size"} \u2014 awaiting photography`}
+        {allPlaceholders
+          ? `${visible.length} placeholder ${visible.length === 1 ? "image" : "images"}${active === "all" ? "" : " in this size"} \u2014 awaiting Esther's photography`
+          : `${visible.length} ${visible.length === 1 ? "image" : "images"}${active === "all" ? "" : " in this size"}`}
       </p>
 
       <ul className="gallery-grid">
         {visible.map((item) => (
-          <li key={item.id} className="gallery-cell">
+          <li
+            key={item.id}
+            className={`gallery-cell${isWideGalleryItem(item) ? " gallery-cell-wide" : ""}`}
+          >
             {item.src ? (
               <button
                 type="button"
@@ -129,6 +133,12 @@ export function Gallery({
                   width={item.width}
                   height={item.height}
                   status={item.status}
+                  markerSize="compact"
+                  sizes={
+                    isWideGalleryItem(item)
+                      ? "(min-width: 80rem) 44vw, (min-width: 48rem) 62vw, 100vw"
+                      : "(min-width: 80rem) 22vw, (min-width: 48rem) 31vw, 48vw"
+                  }
                 />
               </button>
             ) : (
@@ -166,6 +176,7 @@ export function Gallery({
               alt={openItem.alt}
               width={openItem.width}
               height={openItem.height}
+              status={openItem.status}
               sizes="(min-width: 64rem) 60vw, 92vw"
             />
             {openItem.caption ? <p className="lightbox-caption">{openItem.caption}</p> : null}

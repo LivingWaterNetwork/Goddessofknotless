@@ -1,5 +1,6 @@
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { ImageFrame } from "@/components/ui/ImageFrame";
+import { processImage } from "@/content/placeholder-images";
 
 /**
  * Five steps, worded only against what Esther confirmed she does. Notably it
@@ -31,7 +32,7 @@ const steps = [
 
 export function WhatToExpect() {
   return (
-    <Section tone="emerald" id="what-to-expect">
+    <Section tone="emerald" id="what-to-expect" className="expect-section">
       <div className="container-page expect-inner">
         <div className="expect-copy">
           <SectionHeading
@@ -57,14 +58,12 @@ export function WhatToExpect() {
 
         <div className="expect-media">
           <ImageFrame
-            src={null}
-            alt=""
-            width={1000}
-            height={1250}
+            src={processImage.src}
+            alt={`Stock placeholder photograph, not Esther's work — ${processImage.alt}`}
+            width={processImage.width}
+            height={processImage.height}
             status="placeholder"
-            tone="deep"
-            label="Process: hands parting, low-tension technique, quiet care"
-            note="See docs/PHOTO_SHOOT_BRIEF.md, shots 05–07."
+            frame="gold"
             sizes="(min-width: 64rem) 34vw, 100vw"
           />
         </div>

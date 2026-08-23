@@ -2,6 +2,14 @@
 
 Status of every brand and content asset, as of 23 August 2026.
 
+> ## ⚠ Every photograph on this site is a stock placeholder
+>
+> None of it is Esther's work. It was added, with the reviewer's authorisation, so the client
+> review could judge a designed page rather than a grid of empty rectangles. Each image carries a
+> visible **STOCK PLACEHOLDER** marker in the review build, each is registered in
+> `src/content/placeholder-images.ts`, and the production gate refuses to pass while that file has
+> any entries. **Removing them is the launch step — see "Removing the placeholders" below.**
+
 ---
 
 ## Approved and in use
@@ -24,7 +32,7 @@ Status of every brand and content asset, as of 23 August 2026.
 | Asset | Why it is needed | Owner |
 |---|---|---|
 | **Vector master logo** (`Goddess_of_Knotless_Primary_Logo_Vector.svg`) | Referenced in the brief but **not supplied**. Only raster versions exist, extracted from the PowerPoint. A vector master is needed for crisp rendering at any size and for print. | Esther / her designer |
-| **All photography** — 14 images | See `PHOTO_SHOOT_BRIEF.md`. Twelve gallery slots plus hero, founder, process, and studio frames. | Esther |
+| **All photography** — 18 images | See `PHOTO_SHOOT_BRIEF.md` and the placeholder table below, which lists what each frame currently holds and what must replace it. | Esther |
 | **Photography permissions** | Written release per client before any image publishes. | Esther |
 
 ---
@@ -37,7 +45,8 @@ Status of every brand and content asset, as of 23 August 2026.
 | Brand packet onyx texture (1.2MB JPEG) | Same. |
 | The packet's own website mockup copy | See "Deviation from the deck" below. |
 | Cropped logo composites from packet slides 10 and 15 | Those PNGs contain bleed from adjacent slide artwork and are not clean isolated marks. Discarded rather than published. |
-| Stock or AI-generated braid photography | Explicitly rejected. Presenting either as Esther's work would misrepresent the core claim. |
+| AI-generated braid photography | Rejected outright, at any stage. |
+| Stock braid photography **as finished content** | Still rejected. It is in the build only as a labelled placeholder for the client review, never as a claim about Esther's work, and the launch gate enforces that. |
 
 ---
 
@@ -73,6 +82,79 @@ braid-count sizes with a boho option — is both more accurate and more useful.
 **If Esther prefers the deck's original copy, it is a text change in
 `src/components/sections/Hero.tsx` and `src/content/services.ts`.** Flagging it rather than
 deciding silently.
+
+---
+
+## Stock placeholders currently in the build
+
+Source: [Pexels](https://www.pexels.com). Licence for every file below: **Pexels Licence — free to
+use, attribution not required, no model release**. Because there is no model release, none of these
+may be used in paid advertising, and none of them may ever be presented as the studio's own work.
+
+All were downloaded through `https://images.pexels.com/photos/{id}/pexels-photo-{id}.jpeg`,
+cropped to the frame's aspect ratio and re-encoded at quality 72 (long edge ≤ 2000px, 1.8 MB for
+the whole set before `next/image` optimisation).
+
+### Editorial frames
+
+| File | Source | What it shows | Must be replaced by |
+|---|---|---|---|
+| `public/images/hero-braids.jpg` | [pexels.com/photo/35272483](https://www.pexels.com/photo/35272483/) | Long knotless braids, three-quarter from behind, clean parts at the crown, natural light | Shoot brief shot 01 |
+| `public/images/process-parting.jpg` | [pexels.com/photo/33664383](https://www.pexels.com/photo/33664383/) | Overhead view of evenly sectioned parts | Shoot brief shots 05–07 |
+| `public/images/founder-portrait.jpg` | [pexels.com/photo/37600597](https://www.pexels.com/photo/37600597/) | Woman with long braids, warm neutral backdrop | Shoot brief shot 09 |
+| `public/images/founder-portrait-about.jpg` | [pexels.com/photo/36457861](https://www.pexels.com/photo/36457861/) | Woman with long braids, deep green studio backdrop | Shoot brief shot 09 |
+| `public/images/studio-room.jpg` | [pexels.com/photo/27165067](https://www.pexels.com/photo/27165067/) | Calm, uncluttered styling room | Shoot brief shots 11–12 |
+| `public/images/editorial-calm.jpg` | [pexels.com/photo/7624555](https://www.pexels.com/photo/7624555/) | Client at rest, braids gathered up, parts visible | Shoot brief shot 08 |
+
+### Gallery frames
+
+| File | Source | What it shows |
+|---|---|---|
+| `public/images/gallery/result-jumbo.jpg` | [pexels.com/photo/5301531](https://www.pexels.com/photo/5301531/) | Hand lifting a ponytail of braids, plain pale wall |
+| `public/images/gallery/result-large.jpg` | [pexels.com/photo/2474255](https://www.pexels.com/photo/2474255/) | Long braids down the back, three-quarter from behind |
+| `public/images/gallery/result-medium-large.jpg` | [pexels.com/photo/13767165](https://www.pexels.com/photo/13767165/) | Mid-sized braids among dark foliage |
+| `public/images/gallery/result-28-braid-count.jpg` | [pexels.com/photo/31065905](https://www.pexels.com/photo/31065905/) | Braids in a low style from behind, centre part visible |
+| `public/images/gallery/result-medium.jpg` | [pexels.com/photo/5878810](https://www.pexels.com/photo/5878810/) | Back view of a braided crown, sectioned parts |
+| `public/images/gallery/result-medium-fine.jpg` | [pexels.com/photo/34191088](https://www.pexels.com/photo/34191088/) | Fine, softly textured braids, close |
+| `public/images/gallery/result-small.jpg` | [pexels.com/photo/5301538](https://www.pexels.com/photo/5301538/) | Hand holding a length of fine braids |
+| `public/images/gallery/result-extra-small.jpg` | [pexels.com/photo/7190007](https://www.pexels.com/photo/7190007/) | Fine braids half-up, parting visible |
+| `public/images/gallery/result-microbraids.jpg` | [pexels.com/photo/11268995](https://www.pexels.com/photo/11268995/) | Very fine braids with wooden beads |
+| `public/images/gallery/process-parting.jpg` | [pexels.com/photo/29909981](https://www.pexels.com/photo/29909981/) | Freshly parted and braided scalp from behind |
+| `public/images/gallery/process-hands.jpg` | [pexels.com/photo/11482128](https://www.pexels.com/photo/11482128/) | Hands working a single braid |
+| `public/images/gallery/studio-calm.jpg` | [pexels.com/photo/7823407](https://www.pexels.com/photo/7823407/) | Quiet, bright styling room |
+
+**A gallery frame's position does not claim its braid size.** The images are ordered coarse to
+fine as a layout device only; the alt text describes what is in the picture and nothing more.
+
+### How they are marked
+
+- Every frame renders a red **STOCK PLACEHOLDER** tag plus, at full size, "Not Esther's work — for
+  layout review only". The tag is real text, so a screen reader announces it too.
+- Every `alt` begins "Stock placeholder photograph, not Esther's work — …".
+- `/gallery`, `/services` and the homepage proof strip each carry a written notice above the grid.
+- `CONTENT_MODE=production pnpm content:check` **exits 1** while any of them remain.
+
+### Removing the placeholders
+
+1. Drop the real photographs into `public/images/` and `public/images/gallery/`.
+2. In `src/content/gallery.ts`, replace the `slot()` records with real ones: real `src`, real
+   `alt`, `caption` where size and length were recorded, `status: "verified"`.
+3. Point `Hero`, `WhatToExpect`, `FounderStory`, `EditorialBand`, `/about` and `/experience` at the
+   real files.
+4. **Empty `src/content/placeholder-images.ts`** and delete the stock files. That is what clears the
+   photography blocker.
+5. `CONTENT_MODE=production pnpm content:check` — the Photography blockers should be gone.
+
+---
+
+## Derived brand assets
+
+| Asset | Derived from | Location | Notes |
+|---|---|---|---|
+| Script logo, transparent | `logo-primary-on-emerald.png` | `public/brand/logo-script-gold.png` (1128×516) | The packet supplies the script mark only as flat gold on a solid `#064e3b` plate, which is why it had been stuck in the footer — dropped anywhere else it showed as a green rectangle. The plate was keyed out by luminance against the exact brand emerald and the result un-premultiplied, so the mark keeps its own gold. It now sits over photography in the hero and over the gradient in the footer. |
+| "GK" seal, transparent | `logo-seal-on-emerald.png` | `public/brand/seal-gold.png` (319×278) | Same treatment. Used on an emerald disc (`.seal-plate`) on light surfaces, and bare on dark ones. |
+
+Both are a stopgap. **A vector master would be better than either** and is still outstanding.
 
 ---
 

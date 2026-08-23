@@ -8,6 +8,7 @@ import { PreviewBadge } from "@/components/ui/PreviewBadge";
 import { BookButton } from "@/components/ui/BookButton";
 import { ClosingCta } from "@/components/sections/ClosingCta";
 import { getService, services, servicesByOrder, addOns } from "@/content/services";
+import { galleryImageForService } from "@/content/gallery";
 import { durationRange, priceRange, usd } from "@/lib/format";
 import { breadcrumbJsonLd, serviceJsonLd } from "@/lib/structured-data";
 import { defaultSeo } from "@/content/seo";
@@ -55,6 +56,8 @@ export default async function ServiceDetailPage({
     { name: service.name, path: `/services/${service.slug}` },
   ];
 
+  const reference = galleryImageForService(service.slug);
+
   const relevantAddOns = addOns.filter(
     (a) => a.priceUsd !== undefined || a.priceBySlug?.[service.slug] !== undefined,
   );
@@ -66,26 +69,18 @@ export default async function ServiceDetailPage({
         title={service.tagline}
         lede={service.summary}
         crumbs={crumbs}
-        meta={
-          <dl className="detail-stats t-nums">
-            <div>
-              <dt className="t-label">Price range</dt>
-              <dd>{priceRange(service.price.fromUsd, service.price.toUsd)}</dd>
-            </div>
-            <div>
-              <dt className="t-label">Appointment</dt>
-              <dd>{durationRange(service.duration.fromHours, service.duration.toHours)}</dd>
-            </div>
-            <div>
-              <dt className="t-label">Boho finish</dt>
-              <dd>
-                {service.bohoSurchargeUsd !== null
-                  ? `+${usd(service.bohoSurchargeUsd)}`
-                  : "By request"}
-              </dd>
-            </div>
-          </dl>
-        }
+        figures={[
+          { label: "Price range", value: priceRange(service.price.fromUsd, service.price.toUsd) },
+          {
+            label: "Appointment",
+            value: durationRange(service.duration.fromHours, service.duration.toHours),
+          },
+          {
+            label: "Boho finish",
+            value:
+              service.bohoSurchargeUsd !== null ? `+${usd(service.bohoSurchargeUsd)}` : "By request",
+          },
+        ]}
       />
 
       <Section tone="ivory">
@@ -171,17 +166,35 @@ export default async function ServiceDetailPage({
           </div>
 
           <aside className="detail-media" aria-label="Reference image">
-            <ImageFrame
-              src={null}
-              alt=""
-              width={1000}
-              height={1300}
-              status="placeholder"
-              tone="emerald"
-              label={`${service.name} — finished result reference`}
-              note={`Awaiting a real ${service.name} result photograph. See docs/PHOTO_SHOOT_BRIEF.md.`}
-              sizes="(min-width: 64rem) 32vw, 100vw"
-            />
+            {reference ? (
+              <ImageFrame
+                src={reference.src}
+                alt={reference.alt}
+                width={reference.width}
+                height={reference.height}
+                status={reference.status}
+                note={reference.sourceNote}
+                frame="gold"
+                sizes="(min-width: 64rem) 32vw, 100vw"
+              />
+            ) : null}
+
+            <dl className="detail-aside-stats t-nums">
+              <div>
+                <dt className="t-label">Price range</dt>
+                <dd className="detail-aside-figure">
+                  {priceRange(service.price.fromUsd, service.price.toUsd)}
+                </dd>
+              </div>
+              <div>
+                <dt className="t-label">Time in the chair</dt>
+                <dd>{durationRange(service.duration.fromHours, service.duration.toHours)}</dd>
+              </div>
+              <div>
+                <dt className="t-label">Braid count</dt>
+                <dd>{service.braidCount ?? "By arrangement"}</dd>
+              </div>
+            </dl>
           </aside>
         </div>
       </Section>

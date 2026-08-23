@@ -5,7 +5,9 @@ import { ServiceCard } from "@/components/ui/ServiceCard";
 import { SizeGuide } from "@/components/sections/SizeGuide";
 import { ClosingCta } from "@/components/sections/ClosingCta";
 import { PreviewBadge } from "@/components/ui/PreviewBadge";
-import { addOns, servicesByOrder, priceFloorUsd } from "@/content/services";
+import { PlaceholderNotice } from "@/components/ui/PlaceholderNotice";
+import { Frond } from "@/components/ui/Frond";
+import { addOns, servicesByOrder, priceCeilingUsd, priceFloorUsd } from "@/content/services";
 import { metadataForRoute } from "@/lib/page-metadata";
 import { durationRange, priceRange, usd } from "@/lib/format";
 
@@ -18,9 +20,14 @@ export default function ServicesPage() {
         overline="Services & Pricing"
         title="Nine sizes. Real prices. Honest timings."
         lede={`Esther braids knotless styles only, sized by braid count from Jumbo through Microbraids. Every price below is the real range for that size, from ${usd(priceFloorUsd)} at shoulder length up to ankle length at the top of each band.`}
+        figures={[
+          { label: "Sizes published", value: String(servicesByOrder.length) },
+          { label: "Price range", value: `${usd(priceFloorUsd)}–${usd(priceCeilingUsd)}` },
+          { label: "Hidden fees", value: "None" },
+        ]}
       />
 
-      <Section tone="ivory">
+      <Section tone="ivory" className="services-index">
         <div className="container-page">
           <SectionHeading
             overline="The Nine Sizes"
@@ -28,6 +35,7 @@ export default function ServicesPage() {
             lede="Sizes run from Jumbo at ten braids down to Microbraids. The two marked as most booked are where the majority of first appointments land."
             className="services-index-head"
           />
+          <PlaceholderNotice className="services-index-notice" />
           <ul className="card-grid">
             {servicesByOrder.map((service) => (
               <li key={service.slug}>
@@ -44,15 +52,28 @@ export default function ServicesPage() {
         </div>
       </Section>
 
-      <Section tone="sunken" id="comparison">
+      <Section tone="emerald" id="comparison" className="menu-section">
+        <span className="menu-frond" aria-hidden="true">
+          <Frond />
+        </span>
+
         <div className="container-page">
           <SectionHeading
             overline="Side by Side"
             title="The whole menu, in one table."
-            lede="Sorted from largest to finest. Price and time both climb as the braids get smaller."
+            lede="Sorted from largest to finest. Price and time both climb as the braids get smaller — and every figure on this page came from Esther, not from an estimate."
+            align="center"
+            className="menu-head"
           />
 
-          <div className="table-scroll" tabIndex={0} role="region" aria-label="All sizes, prices and times">
+          <div className="rule-foil menu-rule" />
+
+          <div
+            className="table-scroll"
+            tabIndex={0}
+            role="region"
+            aria-label="All sizes, prices and times"
+          >
             <table className="price-table t-nums">
               <caption className="sr-only">
                 All knotless braid sizes with braid count, price range by length, appointment
@@ -69,9 +90,17 @@ export default function ServicesPage() {
               </thead>
               <tbody>
                 {servicesByOrder.map((service) => (
-                  <tr key={service.slug}>
+                  <tr
+                    key={service.slug}
+                    className={service.mostBooked ? "price-row-flagged" : undefined}
+                  >
                     <th scope="row">
                       <a href={`/services/${service.slug}`}>{service.name}</a>
+                      {service.mostBooked ? (
+                        <span className="price-table-flag">
+                          <span aria-hidden="true">★</span> Most booked
+                        </span>
+                      ) : null}
                       {service.status !== "verified" ? (
                         <PreviewBadge
                           status={service.status}
@@ -81,10 +110,10 @@ export default function ServicesPage() {
                       ) : null}
                     </th>
                     <td>{service.braidCount ?? "—"}</td>
-                    <td>{priceRange(service.price.fromUsd, service.price.toUsd)}</td>
-                    <td>
-                      {durationRange(service.duration.fromHours, service.duration.toHours)}
+                    <td className="price-table-figure">
+                      {priceRange(service.price.fromUsd, service.price.toUsd)}
                     </td>
+                    <td>{durationRange(service.duration.fromHours, service.duration.toHours)}</td>
                     <td>
                       {service.bohoSurchargeUsd !== null
                         ? `+${usd(service.bohoSurchargeUsd)}`
@@ -96,7 +125,16 @@ export default function ServicesPage() {
             </table>
           </div>
 
-          <h3 className="t-h3 addons-title">Add-ons</h3>
+          <p className="menu-foot t-body-sm">
+            Your final figure sits inside the published range and depends on length. Esther confirms
+            it when the appointment is booked, together with any add-ons.
+          </p>
+        </div>
+      </Section>
+
+      <Section tone="sunken" id="add-ons">
+        <div className="container-page">
+          <SectionHeading overline="Add-ons" title="What can be added, and what it costs." />
           <dl className="addons">
             {addOns.map((addOn) => (
               <div key={addOn.id} className="addon">

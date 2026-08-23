@@ -5,6 +5,7 @@ import { WhatToExpect } from "@/components/sections/WhatToExpect";
 import { ClosingCta } from "@/components/sections/ClosingCta";
 import { ImageFrame } from "@/components/ui/ImageFrame";
 import { PreviewBadge } from "@/components/ui/PreviewBadge";
+import { studioImage } from "@/content/placeholder-images";
 import { publishablePolicies } from "@/content/policies";
 import { metadataForRoute } from "@/lib/page-metadata";
 import { business } from "@/content/business";
@@ -109,14 +110,13 @@ export default function ExperiencePage() {
           </div>
 
           <ImageFrame
-            src={null}
-            alt=""
-            width={1000}
-            height={1250}
+            src={studioImage.src}
+            alt={`Stock placeholder photograph, not Esther's work — ${studioImage.alt}`}
+            width={studioImage.width}
+            height={studioImage.height}
             status="placeholder"
-            tone="ivory"
-            label="Studio: the chair, the light, the calm of the room"
-            note="See docs/PHOTO_SHOOT_BRIEF.md, shots 11–12."
+            frame="gold"
+            className="prep-media"
             sizes="(min-width: 64rem) 36vw, 100vw"
           />
         </div>

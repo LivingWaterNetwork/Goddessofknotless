@@ -138,18 +138,40 @@ test.describe("gallery", () => {
     await page.goto("/gallery");
 
     const status = page.getByRole("status");
-    await expect(status).toContainText(/12 slots reserved/);
+    /* Counted as placeholders, never as "12 images": the frames hold stock
+       stand-ins, not Esther's work. */
+    await expect(status).toContainText(/12 placeholder images/);
 
     const chip = page.getByRole("button", { name: /^Jumbo/ });
     await chip.click();
     await expect(chip).toHaveAttribute("aria-pressed", "true");
-    await expect(status).toContainText(/1 slot reserved in this size/);
+    await expect(status).toContainText(/1 placeholder image in this size/);
   });
 
-  test("placeholders are not openable", async ({ page }) => {
+  test("every stand-in photograph is visibly marked as a placeholder", async ({ page }) => {
     await page.goto("/gallery");
-    /* Nothing to enlarge until real photography exists. */
-    await expect(page.locator(".gallery-open")).toHaveCount(0);
-    await expect(page.locator('[role="dialog"]')).toHaveCount(0);
+
+    const frames = page.locator(".gallery-cell .image-frame");
+    const markers = page.locator(".gallery-cell .stock-marker");
+    await expect(frames).toHaveCount(12);
+    await expect(markers).toHaveCount(12);
+    await expect(markers.first()).toContainText(/stock placeholder/i);
+
+    /* And said once more in prose, above the grid. */
+    await expect(page.locator(".placeholder-notice")).toContainText(
+      /not Esther's work/i,
+    );
+  });
+
+  test("the placeholder marker follows the image into the lightbox", async ({ page }) => {
+    await page.goto("/gallery");
+
+    await page.locator(".gallery-open").first().click();
+    const dialog = page.locator('[role="dialog"]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator(".stock-marker")).toContainText(/stock placeholder/i);
+
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
   });
 });

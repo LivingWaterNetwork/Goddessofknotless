@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import { ScriptMark } from "@/components/ui/BrandMark";
 import { business, originStatement } from "@/content/business";
 import { footerNav } from "@/content/navigation";
 import { PreviewBadge } from "@/components/ui/PreviewBadge";
@@ -14,13 +14,9 @@ export function Footer() {
           <div className="site-footer-brand">
             {/* The script mark gets room to breathe here, at a size its
                 resolution supports. Alt is empty: the name follows in text. */}
-            <Image
-              src="/brand/logo-primary-on-emerald.png"
-              alt=""
-              width={1536}
-              height={648}
-              sizes="(min-width: 48rem) 20rem, 15rem"
+            <ScriptMark
               className="site-footer-logo"
+              sizes="(min-width: 48rem) 20rem, 15rem"
             />
             <p className="t-body-sm t-muted measure-tight mt-6">{originStatement}</p>
           </div>

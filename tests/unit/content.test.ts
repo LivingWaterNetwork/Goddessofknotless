@@ -13,6 +13,7 @@ import {
 import { faqs } from "@/content/faqs";
 import { policies, publishablePolicies, pendingPolicies } from "@/content/policies";
 import { gallery, galleryFilters, publishableGallery } from "@/content/gallery";
+import { stockPlaceholders } from "@/content/placeholder-images";
 import { testimonials, publishableTestimonials } from "@/content/testimonials";
 import { routeSeo, seoFor } from "@/content/seo";
 import { features } from "@/content/features";
@@ -161,6 +162,28 @@ describe("production content gate invariants", () => {
     expect(publishableGallery).toHaveLength(0);
     for (const item of gallery) {
       if (item.src === null) expect(item.status).toBe("placeholder");
+    }
+  });
+
+  /* The review build fills every frame with stock photography. None of it is
+     Esther's, so none of it may ever pass for verified content. */
+  it("keeps every stand-in photograph marked as a placeholder", () => {
+    for (const item of gallery) {
+      expect(item.status).toBe("placeholder");
+      expect(item.alt).toMatch(/stock placeholder/i);
+      expect(item.sourceNote).toMatch(/STOCK PLACEHOLDER/);
+    }
+  });
+
+  it("registers every stock placeholder so the launch gate can block on it", () => {
+    expect(stockPlaceholders.length).toBeGreaterThan(0);
+    const registered = new Set(stockPlaceholders.map((p) => p.src));
+    for (const item of gallery) {
+      expect(registered.has(item.src ?? "")).toBe(true);
+    }
+    for (const placeholder of stockPlaceholders) {
+      expect(placeholder.sourceUrl).toMatch(/^https:\/\//);
+      expect(placeholder.alt.trim()).not.toBe("");
     }
   });
 

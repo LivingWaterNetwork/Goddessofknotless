@@ -5,9 +5,14 @@ braiding studio in Chicago's West Loop, founded by Esther Parkman in 2020.
 
 Built with Next.js App Router, React 19, TypeScript in strict mode, and Tailwind CSS v4.
 
-**Status: first draft for client review.** Complete and tested; not launched. Six content
+**Status: second draft for client review.** Complete and tested; not launched. Seven content
 blockers stand between this and production — run `pnpm content:check` to see them, or read
 [`docs/CONTENT_CONFIRMATIONS.md`](docs/CONTENT_CONFIRMATIONS.md).
+
+> **Every photograph on this site is a stock placeholder, not Esther's work.** They are in the
+> build so the design can be reviewed with real images in the frames. Each one is visibly marked,
+> and the production gate refuses to pass while any remains. Sources, licence and the removal
+> procedure are in [`docs/ASSET_INVENTORY.md`](docs/ASSET_INVENTORY.md).
 
 ---
 
@@ -32,8 +37,8 @@ behaviour, not a bug.
 | `pnpm start` | Serve the production build |
 | `pnpm lint` | ESLint, `next/core-web-vitals` + `next/typescript` |
 | `pnpm typecheck` | `tsc --noEmit`, strict + `noUncheckedIndexedAccess` |
-| `pnpm test` | Vitest unit tests (37) |
-| `pnpm test:e2e` | Playwright, mobile + desktop, including axe accessibility (110) |
+| `pnpm test` | Vitest unit tests (39) |
+| `pnpm test:e2e` | Playwright, mobile + desktop, including axe accessibility (114) |
 | `pnpm content:check` | Launch gate: lists every unverified fact and forbidden-copy match |
 | `pnpm qa` | The full pre-launch sequence: lint, types, tests, content check, build |
 
@@ -127,12 +132,17 @@ No secrets are needed by the site. Nothing sensitive is committed.
 Adding a size means adding one record to `services.ts`. Its detail page, its sitemap entry, its
 gallery filter, its structured data, and its slot in the size guide all follow automatically.
 
-### Adding photography
+### Replacing the placeholder photography
 
-1. Put files in `public/images/gallery/`.
-2. In `src/content/gallery.ts`, replace each `placeholder(...)` with a real record: set `src`,
-   write the `alt`, add a `caption` if size and length were recorded, set `status: "verified"`.
-3. `pnpm content:check` — the photography blocker clears when every slot has a real image.
+1. Put the real files in `public/images/` and `public/images/gallery/`.
+2. In `src/content/gallery.ts`, replace each `slot(...)` with a real record: set `src`, write the
+   `alt`, add a `caption` if size and length were recorded, set `status: "verified"`.
+3. Point the editorial frames (`Hero`, `WhatToExpect`, `FounderStory`, `EditorialBand`, `/about`,
+   `/experience`) at the real files.
+4. **Empty `src/content/placeholder-images.ts`** and delete the stock files under
+   `public/images/`. That registry is what the launch gate blocks on — a frame holding a picture
+   is not a frame that is done.
+5. `pnpm content:check` — the photography blockers clear.
 
 No layout work is needed. Every frame already reserves its aspect ratio, so real images drop in
 with **zero layout shift** (the site measures CLS 0.000 and stays there).
@@ -161,14 +171,30 @@ Typography: **Cormorant Garamond** (editorial serif), **Montserrat** (primary sa
 
 Components reference semantic class names, not raw values. No hex codes belong in JSX.
 
+Gold is a **material**, not only a hairline: `--gradient-foil` carries it as section rules, card
+rules, image mounts and the header underline. It is decoration only — the gradient runs down to
+`#8a6b22`, which fails AA on both brand backgrounds, so no text is ever set on it.
+
+Every dark section is a layered gradient (`--gradient-emerald`, `--gradient-onyx`) **with an
+explicit `background-color` underneath it**. Without that fallback an element has no resolvable
+background colour and a contrast checker walks past it to the ivory `<body>`.
+
+#### Build configuration
+
+`postcss.config.mjs` and `eslint.config.mjs` are load-bearing and were previously missing from the
+repository: `.gitignore`'s `/*.mjs` rule, meant for local scratch scripts, swallowed both. Without
+the PostCSS config nothing processes Tailwind's `@theme` or `@utility`, and the site ships with no
+palette and no page container. Both files are now explicitly negated in `.gitignore`. **Do not
+re-ignore them.**
+
 ---
 
 ## Testing and quality
 
 | | |
 |---|---|
-| Unit | 37 tests: service integrity, price/duration monotonicity, feature flags, content-gate invariants, formatting, SEO uniqueness |
-| End-to-end | 110 tests across mobile and desktop: routes, navigation, mobile menu focus management, booking CTA presence, size guide, gallery filtering, FAQ accordion, metadata, sitemap, structured data |
+| Unit | 39 tests: service integrity, price/duration monotonicity, feature flags, content-gate invariants, formatting, SEO uniqueness |
+| End-to-end | 114 tests across mobile and desktop: routes, navigation, mobile menu focus management, booking CTA presence, size guide, gallery filtering, FAQ accordion, metadata, sitemap, structured data |
 | Accessibility | axe-core WCAG 2.2 AA on all ten routes plus open menu and accordion states — **zero violations**. Plus asserted manual checks: 320 px, 200% zoom, target sizes, reduced motion, heading order, sticky-header clearance |
 | Measured vitals | LCP 180 ms, CLS 0.000 |
 

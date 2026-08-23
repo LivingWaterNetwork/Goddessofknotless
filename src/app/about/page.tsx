@@ -4,6 +4,7 @@ import { Section, SectionHeading } from "@/components/ui/Section";
 import { ImageFrame } from "@/components/ui/ImageFrame";
 import { ClosingCta } from "@/components/sections/ClosingCta";
 import { business } from "@/content/business";
+import { founderImageAbout } from "@/content/placeholder-images";
 import { metadataForRoute } from "@/lib/page-metadata";
 
 export const metadata: Metadata = metadataForRoute("/about");
@@ -24,7 +25,7 @@ export default function AboutPage() {
               Esther started out as the client, not the stylist — and the reason she learned to
               braid is the reason the studio works the way it does now.
             </p>
-            <p>
+            <p className="about-drop-cap">
               In {business.foundedYear} she went looking for someone who could do her hair the same
               way twice. She did not find one. The parts moved between appointments. Stylists ran
               late, or broke off mid-braid. The finish was different every time. None of it was
@@ -51,14 +52,12 @@ export default function AboutPage() {
 
           <aside className="about-media">
             <ImageFrame
-              src={null}
-              alt=""
-              width={1000}
-              height={1250}
+              src={founderImageAbout.src}
+              alt={`Stock placeholder photograph, not Esther's work — ${founderImageAbout.alt}`}
+              width={founderImageAbout.width}
+              height={founderImageAbout.height}
               status="placeholder"
-              tone="emerald"
-              label="Portrait: Esther Parkman, West Loop studio"
-              note="See docs/PHOTO_SHOOT_BRIEF.md, shot 09 — the founder portrait is a launch-blocking asset."
+              frame="gold"
               sizes="(min-width: 64rem) 34vw, 100vw"
             />
             <div className="about-facts">
@@ -87,14 +86,21 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section tone="emerald">
-        <div className="container-page">
+      <Section tone="emerald" className="standard-section">
+        <div className="container-page standard-inner">
           <SectionHeading
             overline="The Standard"
-            title="Become the first name she gives when someone asks who she trusts with her hair."
+            title={
+              <>
+                Become the first name she gives
+                <br />
+                when someone asks who she trusts with her hair.
+              </>
+            }
             lede="That is the whole ambition. Not the biggest studio, not the loudest one — the one that gets recommended by name."
             align="center"
           />
+          <div className="rule-foil rule-foil-center standard-rule" />
         </div>
       </Section>
 

@@ -15,4 +15,7 @@ coverage/
 
 # Local QA scratch scripts
 /*.mjs
+# …but the ESLint flat config is real project configuration, not scratch.
+!/eslint.config.mjs
+!/postcss.config.mjs
 /serve.sh
